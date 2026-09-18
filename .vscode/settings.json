@@ -1,3 +1,6 @@
 {
-    "gitdoc.enabled": true
+    "gitdoc.enabled": true,
+    "gitdoc.pushInterval": 0,
+    "gitdoc.commitMessageFormat": "{type}: {changeType} {path}",
+    "gitdoc.allowDirtyFolders": true
 }
