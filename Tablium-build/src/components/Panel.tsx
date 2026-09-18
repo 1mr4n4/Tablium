@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
+import { useLang } from '../i18n';
 
 function useIsDesktop(): boolean {
   const [isDesktop, setIsDesktop] = useState(() =>
@@ -30,6 +31,7 @@ interface PanelProps {
  */
 export default function Panel({ open, onClose, title, children, footer }: PanelProps) {
   const isDesktop = useIsDesktop();
+  const { t } = useLang();
   const hidden = isDesktop ? { x: '100%' } : { y: '100%' };
   const shown = { x: 0, y: 0 };
   return (
@@ -58,7 +60,7 @@ export default function Panel({ open, onClose, title, children, footer }: PanelP
               <h2 className="font-display text-lg text-ink-800 dark:text-paper">{title}</h2>
               <button
                 onClick={onClose}
-                aria-label="Fermer"
+                aria-label={t.close}
                 className="focus-ring rounded-full p-1.5 text-ink-600 hover:bg-ink/[0.06] dark:text-ink-400 dark:hover:bg-white/[0.08] transition-colors"
               >
                 <X size={18} />

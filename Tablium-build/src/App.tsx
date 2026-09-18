@@ -10,15 +10,6 @@ import SettingsPanel from './components/SettingsPanel';
 import LiveIndicator from './components/LiveIndicator';
 import LanguageSwitcher from './components/LanguageSwitcher';
 
-const DAY_MAP: Record<string, string> = {
-  Lundi: 'dayLundi',
-  Mardi: 'dayMardi',
-  Mercredi: 'dayMercredi',
-  Jeudi: 'dayJeudi',
-  Vendredi: 'dayVendredi',
-  Samedi: 'daySamedi',
-} as const;
-
 function Dashboard() {
   const { config, visibleSessions, groups, updateSession, addSession, deleteSession, duplicateSession } =
     useStore();

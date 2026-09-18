@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, User, CheckCircle2, XCircle, Ban } from 'lucide-react';
 import { ClassSession } from '../types';
+import { useLang } from '../i18n';
 import { SESSION_TYPE_CLASSES } from '../utils';
 
 interface SessionCardProps {
@@ -20,6 +21,7 @@ const STATUS_ICON: Record<string, React.ReactNode> = {
 };
 
 export default function SessionCard({ session, onClick, compact, live, draggable, onDragStart }: SessionCardProps) {
+  const { t } = useLang();
   const typeClasses = SESSION_TYPE_CLASSES[session.type];
   const isCancelled = session.status === 'cancelled';
 
@@ -48,7 +50,7 @@ export default function SessionCard({ session, onClick, compact, live, draggable
             {live && (
               <span className="flex items-center gap-1 text-[10px] font-semibold text-live dark:text-live-dark">
                 <span className="h-1.5 w-1.5 rounded-full bg-live dark:bg-live-dark animate-pulseDot" />
-                en cours
+                {t.liveTag}
               </span>
             )}
           </div>

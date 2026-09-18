@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { ClassSession, DAYS, Day, TimeSlot, TimetableConfig } from '../types';
+import { useLang } from '../i18n';
 import { timeToMinutes } from '../utils';
 import SessionCard from './SessionCard';
 
@@ -29,22 +30,30 @@ function slotLabel(slot: TimeSlot): string {
   return `${fmt(slot.startTime)} – ${fmt(slot.endTime)}`;
 }
 
+const DAY_KEY: Record<Day, string> = {
+  Lundi: 'dayLundi',
+  Mardi: 'dayMardi',
+  Mercredi: 'dayMercredi',
+  Jeudi: 'dayJeudi',
+  Vendredi: 'dayVendredi',
+  Samedi: 'daySamedi',
+};
+
 export default function DesktopGrid({ config, sessions, onSessionClick, onEmptySlotClick, onMoveSession }: DesktopGridProps) {
+  const { t } = useLang();
   const [now, setNow] = useState(new Date());
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(id);
   }, []);
 
-  const todayName = (DAYS as string[]).find((d) => {
-    const dayEnum = d as Day;
-    const dow = now.getDay();
-    const map: Record<string, number> = { Lundi: 1, Mardi: 2, Mercredi: 3, Jeudi: 4, Vendredi: 5, Samedi: 6 };
-    return map[dayEnum] === dow;
-  }) as Day | undefined;
+  const todayDow = now.getDay();
+  const todayName = DAYS.find((d) => {
+    const map: Record<Day, number> = { Lundi: 1, Mardi: 2, Mercredi: 3, Jeudi: 4, Vendredi: 5, Samedi: 6 };
+    return map[d] === todayDow;
+  });
 
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
-
   const timeSlots = config.timeSlots;
 
   const isCurrentSlot = (slot: TimeSlot) => {
@@ -62,9 +71,9 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
         style={{ gridTemplateColumns: `100px repeat(${cols}, 1fr)` }}
       >
         <div className="px-3 py-3 text-[11px] font-medium text-ink-400 dark:text-ink-400 border-r border-ink/[0.06] dark:border-white/[0.06]">
-          <span className="italic">Horaires</span>
+          <span className="italic">{t.schedules}</span>
           <br />
-          <span className="text-ink-600 dark:text-ink-400">Jours</span>
+          <span className="text-ink-600 dark:text-ink-400">{t.days}</span>
         </div>
         {timeSlots.map((slot, i) => {
           const current = isCurrentSlot(slot);
@@ -85,13 +94,13 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
 
       {DAYS.map((day) => {
         const isToday = day === todayName;
+        const dayLabel = t[DAY_KEY[day] as keyof typeof t] as string;
         return (
           <div
             key={day}
             className="grid border-b border-ink/[0.06] dark:border-white/[0.06] last:border-b-0"
             style={{ gridTemplateColumns: `100px repeat(${cols}, 1fr)` }}
           >
-            {/* Day label */}
             <div
               className={`px-3 py-3 flex items-start justify-center text-xs font-bold uppercase tracking-wide border-r border-ink/[0.06] dark:border-white/[0.06] ${
                 isToday
@@ -99,10 +108,9 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
                   : 'text-ink-600 dark:text-ink-400'
               }`}
             >
-              {day}
+              {dayLabel}
             </div>
 
-            {/* Time slot cells */}
             {timeSlots.map((slot, si) => {
               const cellSessions = sessionsForCell(sessions, day, slot);
               const current = isCurrentSlot(slot) && isToday;
@@ -124,7 +132,7 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
                   <button
                     onClick={() => onEmptySlotClick(day, slot.startTime)}
                     className="focus-ring absolute right-1 top-1 z-10 rounded-full p-1 text-ink-400 opacity-0 transition-opacity hover:bg-ink/[0.08] group-hover/cell:opacity-100 dark:hover:bg-white/[0.1]"
-                    aria-label={`Ajouter une séance le ${day} à ${slot.startTime}`}
+                    aria-label={t.addSessionLabel(dayLabel, slot.startTime)}
                   >
                     <Plus size={13} />
                   </button>

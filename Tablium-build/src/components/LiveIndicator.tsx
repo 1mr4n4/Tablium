@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Clock } from 'lucide-react';
 import { ClassSession } from '../types';
+import { useLang } from '../i18n';
 import { getCurrentSession, getNextSession, sessionProgress, timeToMinutes } from '../utils';
 
 interface LiveIndicatorProps {
@@ -9,6 +10,7 @@ interface LiveIndicatorProps {
 }
 
 export default function LiveIndicator({ sessions, onClick }: LiveIndicatorProps) {
+  const { t } = useLang();
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
@@ -23,7 +25,7 @@ export default function LiveIndicator({ sessions, onClick }: LiveIndicatorProps)
     return (
       <div className="flex items-center gap-1.5 rounded-full glass px-3 py-1.5 text-xs text-ink-600 dark:text-ink-400">
         <Clock size={13} />
-        <span>Rien de prévu pour la suite aujourd'hui</span>
+        <span>{t.nothingScheduled}</span>
       </div>
     );
   }
@@ -41,9 +43,9 @@ export default function LiveIndicator({ sessions, onClick }: LiveIndicatorProps)
           <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-live dark:bg-live-dark" />
         </span>
         <span className="font-medium text-ink-800 dark:text-paper">
-          En cours&nbsp;: {current.subject}
+          {t.inProgress}&nbsp;: {current.subject}
         </span>
-        <span className="text-ink-600 dark:text-ink-400">· {remaining} min restantes</span>
+        <span className="text-ink-600 dark:text-ink-400">· {remaining} {t.minRemaining}</span>
         <span className="hidden h-1 w-16 overflow-hidden rounded-full bg-ink/10 dark:bg-white/10 sm:block">
           <span
             className="block h-full bg-live dark:bg-live-dark transition-all"
@@ -62,7 +64,7 @@ export default function LiveIndicator({ sessions, onClick }: LiveIndicatorProps)
     >
       <Clock size={13} className="text-brand dark:text-live-dark" />
       <span className="text-ink-800 dark:text-paper">
-        Prochain cours&nbsp;: {next!.subject} dans {mins} min
+        {t.nextClass}&nbsp;: {next!.subject} {t.minAway} {mins}
       </span>
     </button>
   );

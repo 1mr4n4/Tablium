@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Plus, Trash2, Copy, CheckCircle2, XCircle, Ban, RotateCcw } from 'lucide-react';
 import Panel from './Panel';
 import { ClassSession, DAYS, Day, SESSION_TYPES, SessionType, Task } from '../types';
+import { useLang } from '../i18n';
 import { newId, SESSION_TYPE_CLASSES } from '../utils';
 
 interface SessionModalProps {
   open: boolean;
   onClose: () => void;
-  session: ClassSession | null; // null => "create" mode
+  session: ClassSession | null;
   defaultDay?: Day;
   defaultStartTime?: string;
   onSave: (session: ClassSession) => void;
@@ -40,6 +41,23 @@ function addMinutes(time: string, mins: number): string {
 
 const COLOR_SWATCHES = ['#3B6FD9', '#12897A', '#B9740A', '#C0392B', '#6B7280', '#8E44AD', '#0EA5A5'];
 
+const TYPE_KEY: Record<SessionType, string> = {
+  Cours: 'typeCours',
+  TD: 'typeTD',
+  TP: 'typeTP',
+  Examen: 'typeExamen',
+  Autre: 'typeAutre',
+};
+
+const DAY_KEY: Record<Day, string> = {
+  Lundi: 'dayLundi',
+  Mardi: 'dayMardi',
+  Mercredi: 'dayMercredi',
+  Jeudi: 'dayJeudi',
+  Vendredi: 'dayVendredi',
+  Samedi: 'daySamedi',
+};
+
 export default function SessionModal({
   open,
   onClose,
@@ -50,6 +68,7 @@ export default function SessionModal({
   onDelete,
   onDuplicate,
 }: SessionModalProps) {
+  const { t } = useLang();
   const [draft, setDraft] = useState<ClassSession>(session ?? emptyDraft(defaultDay ?? 'Lundi', defaultStartTime));
   const [newTask, setNewTask] = useState('');
 
@@ -74,12 +93,12 @@ export default function SessionModal({
   function toggleTask(id: string) {
     setDraft((d) => ({
       ...d,
-      tasks: d.tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
+      tasks: d.tasks.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)),
     }));
   }
 
   function removeTask(id: string) {
-    setDraft((d) => ({ ...d, tasks: d.tasks.filter((t) => t.id !== id) }));
+    setDraft((d) => ({ ...d, tasks: d.tasks.filter((task) => task.id !== id) }));
   }
 
   function handleSave() {
@@ -95,7 +114,7 @@ export default function SessionModal({
     <Panel
       open={open}
       onClose={onClose}
-      title={isCreate ? 'Nouvelle séance' : draft.subject || 'Séance'}
+      title={isCreate ? t.newSession : draft.subject || t.sessionLabel}
       footer={
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
@@ -106,7 +125,7 @@ export default function SessionModal({
                   onClose();
                 }}
                 className="focus-ring rounded-lg p-2 text-session-examen hover:bg-session-examen/10 dark:text-session-examenDark"
-                aria-label="Supprimer"
+                aria-label={t.delete}
               >
                 <Trash2 size={16} />
               </button>
@@ -118,7 +137,7 @@ export default function SessionModal({
                   onClose();
                 }}
                 className="focus-ring rounded-lg p-2 text-ink-600 hover:bg-ink/[0.06] dark:text-ink-400 dark:hover:bg-white/[0.08]"
-                aria-label="Dupliquer"
+                aria-label={t.duplicate}
               >
                 <Copy size={16} />
               </button>
@@ -129,7 +148,7 @@ export default function SessionModal({
             disabled={!draft.subject.trim()}
             className="focus-ring rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40 dark:bg-live dark:text-ink-800"
           >
-            {isCreate ? 'Ajouter la séance' : 'Enregistrer'}
+            {isCreate ? t.addSessionButton : t.save}
           </button>
         </div>
       }
@@ -137,10 +156,10 @@ export default function SessionModal({
       <div className="space-y-5">
         {/* Subject */}
         <div>
-          <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">Intitulé</label>
+          <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">{t.subject}</label>
           <input
             className={inputClasses}
-            placeholder="ex. Marketing Fondamental"
+            placeholder={t.subjectPlaceholder}
             value={draft.subject}
             onChange={(e) => patch('subject', e.target.value)}
             autoFocus={isCreate}
@@ -149,20 +168,21 @@ export default function SessionModal({
 
         {/* Type badges */}
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-ink-600 dark:text-ink-400">Type</label>
+          <label className="mb-1.5 block text-xs font-medium text-ink-600 dark:text-ink-400">{t.type}</label>
           <div className="flex flex-wrap gap-1.5">
-            {SESSION_TYPES.map((t) => {
-              const active = draft.type === t;
-              const cls = SESSION_TYPE_CLASSES[t as SessionType];
+            {SESSION_TYPES.map((st) => {
+              const active = draft.type === st;
+              const cls = SESSION_TYPE_CLASSES[st];
+              const label = t[TYPE_KEY[st] as keyof typeof t] as string;
               return (
                 <button
-                  key={t}
-                  onClick={() => patch('type', t)}
+                  key={st}
+                  onClick={() => patch('type', st)}
                   className={`focus-ring rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                     active ? cls.badge + ' ring-1 ring-current' : 'text-ink-600 hover:bg-ink/[0.06] dark:text-ink-400 dark:hover:bg-white/[0.08]'
                   }`}
                 >
-                  {t}
+                  {label}
                 </button>
               );
             })}
@@ -172,7 +192,7 @@ export default function SessionModal({
         {/* Day + time */}
         <div className="grid grid-cols-3 gap-2">
           <div className="col-span-1">
-            <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">Jour</label>
+            <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">{t.day}</label>
             <select
               className={inputClasses}
               value={draft.day}
@@ -180,13 +200,13 @@ export default function SessionModal({
             >
               {DAYS.map((d) => (
                 <option key={d} value={d}>
-                  {d}
+                  {t[DAY_KEY[d] as keyof typeof t] as string}
                 </option>
               ))}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">Début</label>
+            <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">{t.start}</label>
             <input
               type="time"
               className={inputClasses}
@@ -195,7 +215,7 @@ export default function SessionModal({
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">Fin</label>
+            <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">{t.end}</label>
             <input
               type="time"
               className={inputClasses}
@@ -208,19 +228,19 @@ export default function SessionModal({
         {/* Professor + room */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">Enseignant</label>
+            <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">{t.professor}</label>
             <input
               className={inputClasses}
-              placeholder="ex. Mme AMAJID"
+              placeholder={t.professorPlaceholder}
               value={draft.professor ?? ''}
               onChange={(e) => patch('professor', e.target.value)}
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">Salle</label>
+            <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">{t.room}</label>
             <input
               className={inputClasses}
-              placeholder="ex. Salle 0-2"
+              placeholder={t.roomPlaceholder}
               value={draft.room ?? ''}
               onChange={(e) => patch('room', e.target.value)}
             />
@@ -230,22 +250,22 @@ export default function SessionModal({
         {/* Group + color */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">Groupe</label>
+            <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">{t.group}</label>
             <input
               className={inputClasses}
-              placeholder="ex. S1"
+              placeholder={t.groupPlaceholder}
               value={draft.group ?? ''}
               onChange={(e) => patch('group', e.target.value)}
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-600 dark:text-ink-400">Couleur</label>
+            <label className="mb-1.5 block text-xs font-medium text-ink-600 dark:text-ink-400">{t.color}</label>
             <div className="flex items-center gap-1.5 pt-1">
               {COLOR_SWATCHES.map((c) => (
                 <button
                   key={c}
                   onClick={() => patch('color', c)}
-                  aria-label={`Couleur ${c}`}
+                  aria-label={c}
                   className={`h-5 w-5 rounded-full transition-transform hover:scale-110 ${
                     draft.color === c ? 'ring-2 ring-offset-2 ring-ink-800 dark:ring-paper dark:ring-offset-ink-700' : ''
                   }`}
@@ -259,34 +279,34 @@ export default function SessionModal({
         {/* Status quick actions */}
         {!isCreate && (
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-600 dark:text-ink-400">Présence</label>
+            <label className="mb-1.5 block text-xs font-medium text-ink-600 dark:text-ink-400">{t.attendance}</label>
             <div className="flex gap-1.5">
               <StatusButton
                 active={draft.status === 'attended'}
                 onClick={() => patch('status', 'attended')}
                 icon={<CheckCircle2 size={14} />}
-                label="Présent"
+                label={t.present}
                 activeClasses="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-current"
               />
               <StatusButton
                 active={draft.status === 'missed'}
                 onClick={() => patch('status', 'missed')}
                 icon={<XCircle size={14} />}
-                label="Absent"
+                label={t.absent}
                 activeClasses="bg-session-examen/10 text-session-examen dark:text-session-examenDark ring-1 ring-current"
               />
               <StatusButton
                 active={draft.status === 'cancelled'}
                 onClick={() => patch('status', 'cancelled')}
                 icon={<Ban size={14} />}
-                label="Annulé"
+                label={t.cancelled}
                 activeClasses="bg-ink/10 text-ink-600 dark:bg-white/10 dark:text-ink-400 ring-1 ring-current"
               />
               <StatusButton
                 active={draft.status === 'scheduled'}
                 onClick={() => patch('status', 'scheduled')}
                 icon={<RotateCcw size={14} />}
-                label="Réinitialiser"
+                label={t.reset}
                 activeClasses="bg-brand/10 text-brand dark:text-live-dark ring-1 ring-current"
               />
             </div>
@@ -296,7 +316,7 @@ export default function SessionModal({
         {/* Tasks */}
         <div>
           <label className="mb-1.5 block text-xs font-medium text-ink-600 dark:text-ink-400">
-            Tâches / rappels
+            {t.tasksReminders}
           </label>
           <div className="space-y-1.5">
             {draft.tasks.map((task) => (
@@ -308,7 +328,7 @@ export default function SessionModal({
                       ? 'border-brand bg-brand dark:border-live dark:bg-live'
                       : 'border-ink/30 dark:border-white/30'
                   }`}
-                  aria-label={task.completed ? 'Marquer non fait' : 'Marquer fait'}
+                  aria-label={task.completed ? t.reset : t.addTask}
                 >
                   {task.completed && <span className="h-1.5 w-1.5 rounded-sm bg-white dark:bg-ink-800" />}
                 </button>
@@ -321,7 +341,7 @@ export default function SessionModal({
                 </span>
                 <button
                   onClick={() => removeTask(task.id)}
-                  aria-label="Supprimer la tâche"
+                  aria-label={t.deleteTask}
                   className="focus-ring rounded p-0.5 text-ink-400 hover:text-session-examen"
                 >
                   <Trash2 size={13} />
@@ -332,14 +352,14 @@ export default function SessionModal({
           <div className="mt-2 flex gap-1.5">
             <input
               className={inputClasses}
-              placeholder="ex. Apporter le chapitre 2"
+              placeholder={t.taskPlaceholder}
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addTask()}
             />
             <button
               onClick={addTask}
-              aria-label="Ajouter une tâche"
+              aria-label={t.addTask}
               className="focus-ring shrink-0 rounded-lg bg-ink/[0.06] px-2.5 text-ink-800 hover:bg-ink/10 dark:bg-white/[0.08] dark:text-paper dark:hover:bg-white/[0.14]"
             >
               <Plus size={16} />
@@ -349,10 +369,10 @@ export default function SessionModal({
 
         {/* Notes */}
         <div>
-          <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">Notes</label>
+          <label className="mb-1 block text-xs font-medium text-ink-600 dark:text-ink-400">{t.notes}</label>
           <textarea
             className={inputClasses + ' min-h-[70px] resize-y'}
-            placeholder="Notes personnelles pour cette séance…"
+            placeholder={t.notesPlaceholder}
             value={draft.notes ?? ''}
             onChange={(e) => patch('notes', e.target.value)}
           />
