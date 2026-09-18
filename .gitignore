@@ -1,1 +1,3 @@
-.vscode\
+# Ignore .vscode except settings for GitDoc
+.vscode/*
+!.vscode/settings.json
