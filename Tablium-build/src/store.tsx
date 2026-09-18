@@ -3,9 +3,9 @@ import { ClassSession, ThemeMode, TimetableConfig, VisionSettings } from './type
 import { defaultTimetable } from './data/sampleData';
 import { newId } from './utils';
 
-const TIMETABLE_KEY = 'schedulecraft.timetable.v1';
-const THEME_KEY = 'schedulecraft.theme.v1';
-const VISION_KEY = 'schedulecraft.vision.v1';
+const TIMETABLE_KEY = 'tablium.timetable.v1';
+const THEME_KEY = 'tablium.theme.v1';
+const VISION_KEY = 'tablium.vision.v1';
 
 function loadTimetable(): TimetableConfig {
   try {
@@ -40,7 +40,7 @@ interface StoreValue {
   visibleSessions: ClassSession[];
   groups: string[];
   setActiveGroup: (group: string | undefined) => void;
-  addSession: (session: Omit<ClassSession, 'id' | 'tasks'>) => void;
+  addSession: (session: Omit<ClassSession, 'id'>) => void;
   updateSession: (id: string, patch: Partial<ClassSession>) => void;
   deleteSession: (id: string) => void;
   duplicateSession: (id: string) => void;
@@ -86,10 +86,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setConfig((c) => ({ ...c, activeGroup: group }));
   }, []);
 
-  const addSession = useCallback((session: Omit<ClassSession, 'id' | 'tasks'>) => {
+  const addSession = useCallback((session: Omit<ClassSession, 'id'>) => {
     setConfig((c) => ({
       ...c,
-      sessions: [...c.sessions, { ...session, id: newId(), tasks: [] }],
+      sessions: [...c.sessions, { ...session, id: newId() }],
     }));
   }, []);
 

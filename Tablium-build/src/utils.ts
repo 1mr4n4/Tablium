@@ -101,7 +101,7 @@ export function exportToICS(config: TimetableConfig): string {
   const lines: string[] = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//ScheduleCraft//FR',
+    'PRODID:-//Tablium//FR',
     'CALSCALE:GREGORIAN',
   ];
 
@@ -130,7 +130,7 @@ export function exportToICS(config: TimetableConfig): string {
 
     lines.push(
       'BEGIN:VEVENT',
-      `UID:${sess.id}@schedulecraft`,
+      `UID:${sess.id}@tablium`,
       `DTSTAMP:${fmt(new Date())}`,
       `DTSTART:${fmt(dtStart)}`,
       `DTEND:${fmt(dtEnd)}`,
