@@ -12,6 +12,7 @@ const BACKUPS_KEY = 'tablium.timetable.backups.v1';
 const MAX_BACKUPS = 5;
 const BACKGROUND_KEY = 'tablium.background.v1';
 const STICKERS_KEY = 'tablium.stickers.v1';
+const BACKGROUND_TEXT_KEY = 'tablium.background-text.v1';
 
 function loadTimetable(): TimetableConfig {
   try {
@@ -75,6 +76,7 @@ interface StoreValue {
   vision: VisionSettings;
   backgroundImage: string;
   stickers: string[];
+  backgroundText: string;
   visibleSessions: ClassSession[];
   groups: string[];
   setActiveGroup: (group: string | undefined) => void;
@@ -94,6 +96,7 @@ interface StoreValue {
   setVision: (v: VisionSettings) => void;
   setBackgroundImage: (image: string) => void;
   setStickers: (stickers: string[]) => void;
+  setBackgroundText: (text: string) => void;
   exportJSON: () => string;
   importJSON: (json: string) => { ok: boolean; error?: string };
   resetTimetable: () => void;
@@ -109,6 +112,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [vision, setVisionState] = useState<VisionSettings>(loadVision);
   const [backgroundImage, setBackgroundImageState] = useState(() => loadString(BACKGROUND_KEY));
   const [stickers, setStickersState] = useState<string[]>(loadStickers);
+  const [backgroundText, setBackgroundTextState] = useState(() => loadString(BACKGROUND_TEXT_KEY));
 
   useEffect(() => {
     try {
@@ -149,6 +153,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [backgroundImage]);
 
   useEffect(() => { localStorage.setItem(STICKERS_KEY, JSON.stringify(stickers)); }, [stickers]);
+  useEffect(() => { localStorage.setItem(BACKGROUND_TEXT_KEY, backgroundText); }, [backgroundText]);
 
   const groups = useMemo(() => {
     const set = new Set<string>();
@@ -271,6 +276,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const setBackgroundImage = useCallback((image: string) => setBackgroundImageState(image), []);
   const setStickers = useCallback((nextStickers: string[]) => setStickersState(nextStickers.slice(-8)), []);
+  const setBackgroundText = useCallback((text: string) => setBackgroundTextState(text.slice(0, 120)), []);
 
   const exportJSON = useCallback(() => JSON.stringify(config, null, 2), [config]);
 
@@ -303,6 +309,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     vision,
     backgroundImage,
     stickers,
+    backgroundText,
     visibleSessions,
     groups,
     setActiveGroup,
@@ -322,6 +329,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setVision,
     setBackgroundImage,
     setStickers,
+    setBackgroundText,
     exportJSON,
     importJSON,
     resetTimetable,

@@ -27,6 +27,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     vision,
     backgroundImage,
     stickers,
+    backgroundText,
     groups,
     setActiveGroup,
     setTimeRange,
@@ -42,6 +43,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     setVision,
     setBackgroundImage,
     setStickers,
+    setBackgroundText,
     exportJSON,
     importJSON,
     replaceSessions,
@@ -51,6 +53,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const jsonInputRef = useRef<HTMLInputElement>(null);
   const backgroundInputRef = useRef<HTMLInputElement>(null);
+  const stickerInputRef = useRef<HTMLInputElement>(null);
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState<{ type: 'ok' | 'error'; text: string } | null>(null);
 
@@ -123,6 +126,15 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
   function toggleSticker(sticker: string) {
     setStickers(stickers.includes(sticker) ? stickers.filter((item) => item !== sticker) : [...stickers, sticker]);
+  }
+
+  function handleStickerUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = () => setStickers([...stickers, reader.result as string]);
+    reader.readAsDataURL(file);
   }
 
   function handleReset() {
@@ -270,10 +282,17 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                 {backgroundImage && <button onClick={() => setBackgroundImage('')} aria-label={t.removeBackground} title={t.removeBackground} className="focus-ring rounded-lg p-1.5 text-ink-500 hover:bg-ink/[0.08]"><X size={14} /></button>}
               </div>
             </div>
+            <label className="block border-t border-ink/[0.08] pt-2 text-xs text-ink-500 dark:border-white/[0.08] dark:text-ink-400">
+              {t.backgroundText}
+              <input value={backgroundText} onChange={(e) => setBackgroundText(e.target.value)} maxLength={120} placeholder={t.backgroundTextPlaceholder} className={`${inputClasses} mt-1`} />
+            </label>
             <div className="flex flex-wrap items-center gap-1.5 border-t border-ink/[0.08] pt-2 dark:border-white/[0.08]">
               <span className="mr-1 text-xs text-ink-500 dark:text-ink-400">{t.stickers}</span>
               {['📚', '✏️', '🎓', '☕', '⭐', '🧠', '📌', '🌱'].map((sticker) => <button key={sticker} onClick={() => toggleSticker(sticker)} className={`focus-ring rounded-lg p-1.5 text-lg ${stickers.includes(sticker) ? 'bg-brand/15 ring-1 ring-brand' : 'hover:bg-ink/[0.06]'}`}>{sticker}</button>)}
+              <input ref={stickerInputRef} type="file" accept="image/*" className="hidden" onChange={handleStickerUpload} />
+              <button onClick={() => stickerInputRef.current?.click()} className="focus-ring rounded-lg bg-brand px-2 py-1.5 text-xs font-medium text-white dark:bg-live dark:text-ink-800">+ {t.customSticker}</button>
             </div>
+            {stickers.some((sticker) => sticker.startsWith('data:image/')) && <div className="flex flex-wrap gap-2 border-t border-ink/[0.08] pt-2 dark:border-white/[0.08]">{stickers.map((sticker, index) => sticker.startsWith('data:image/') && <button key={`${sticker}-${index}`} onClick={() => setStickers(stickers.filter((_, stickerIndex) => stickerIndex !== index))} title={t.removeSticker} aria-label={t.removeSticker} className="focus-ring rounded-lg border border-ink/[0.1] p-1 hover:ring-1 hover:ring-brand"><img src={sticker} alt="" className="h-8 w-8 object-contain" /></button>)}</div>}
           </div>
         </section>
 

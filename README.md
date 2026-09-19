@@ -20,6 +20,7 @@ For everyday use, open the hosted app at [https://1mr4n4.github.io/Tablium/](htt
 - JSON backup/import and recurring `.ics` calendar export.
 - Image timetable import through a configurable vision provider.
 - Local persistence with rolling timetable backups and safe restore.
+- Custom background captions and uploaded sticker images, stored only in the browser.
 - Installable PWA with offline caching after the first load.
 
 ## Installation From Scratch

@@ -13,7 +13,7 @@ import LanguageSwitcher from './components/LanguageSwitcher';
 import WorkspaceTools, { ToolId, WorkspaceLauncher, WorkspaceSide } from './components/WorkspaceTools';
 
 function Dashboard() {
-  const { config, visibleSessions, groups, stickers, updateSession, addSession, deleteSession, duplicateSession } =
+  const { config, visibleSessions, groups, stickers, backgroundText, updateSession, addSession, deleteSession, duplicateSession } =
     useStore();
   const { t } = useLang();
 
@@ -97,10 +97,13 @@ function Dashboard() {
   return (
     <div className="relative min-h-screen">
       {stickers.map((sticker, index) => (
-        <span key={`${sticker}-${index}`} className="pointer-events-none fixed z-10 select-none text-2xl opacity-70" style={{ right: `${8 + (index % 4) * 8}%`, top: `${18 + Math.floor(index / 4) * 18}%` }}>
-          {sticker}
-        </span>
+        sticker.startsWith('data:image/') ? (
+          <img key={`${sticker}-${index}`} src={sticker} alt="" className="pointer-events-none fixed z-10 h-12 w-12 select-none object-contain opacity-80" style={{ right: `${8 + (index % 4) * 8}%`, top: `${18 + Math.floor(index / 4) * 18}%` }} />
+        ) : (
+          <span key={`${sticker}-${index}`} className="pointer-events-none fixed z-10 select-none text-2xl opacity-70" style={{ right: `${8 + (index % 4) * 8}%`, top: `${18 + Math.floor(index / 4) * 18}%` }}>{sticker}</span>
+        )
       ))}
+      {backgroundText && <div className="pointer-events-none fixed bottom-8 left-1/2 z-10 max-w-[80vw] -translate-x-1/2 rotate-[-2deg] rounded-xl bg-white/75 px-4 py-2 text-center font-display text-lg italic text-ink-800 shadow-lg backdrop-blur-sm">{backgroundText}</div>}
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-ink/[0.08] bg-paper/85 backdrop-blur-md dark:border-white/[0.08] dark:bg-ink/85">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">

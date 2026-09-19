@@ -127,6 +127,10 @@ type TranslationKeys = {
   uploadBackground: string;
   removeBackground: string;
   stickers: string;
+  backgroundText: string;
+  backgroundTextPlaceholder: string;
+  customSticker: string;
+  removeSticker: string;
   apiKeyRequired: string;
   visionResponseError: (provider: string, status: number) => string;
   visionInvalidResponse: string;
@@ -280,6 +284,10 @@ const en: TranslationKeys = {
   uploadBackground: 'Upload background',
   removeBackground: 'Remove background',
   stickers: 'Stickers',
+  backgroundText: 'Background text',
+  backgroundTextPlaceholder: 'e.g. This week, I have this!',
+  customSticker: 'Add your own sticker',
+  removeSticker: 'Remove sticker',
   apiKeyRequired: 'Add an API key in Settings before importing an image.',
   visionResponseError: (provider: string, status: number) => `${provider} returned an error (${status}).`,
   visionInvalidResponse: 'The vision provider returned an unreadable response.',
@@ -425,6 +433,10 @@ const fr: TranslationKeys = {
   uploadBackground: 'Importer un arrière-plan',
   removeBackground: 'Supprimer l’arrière-plan',
   stickers: 'Autocollants',
+  backgroundText: 'Texte sur l’arrière-plan',
+  backgroundTextPlaceholder: 'ex. Cette semaine, je gère !',
+  customSticker: 'Ajouter votre autocollant',
+  removeSticker: 'Supprimer l’autocollant',
   apiKeyRequired: 'Ajoutez une clé API dans les paramètres avant d’importer une image.',
   visionResponseError: (provider: string, status: number) => `${provider} a renvoyé une erreur (${status}).`,
   visionInvalidResponse: 'Le fournisseur de vision a renvoyé une réponse illisible.',
@@ -570,6 +582,10 @@ const de: TranslationKeys = {
   uploadBackground: 'Hintergrund hochladen',
   removeBackground: 'Hintergrund entfernen',
   stickers: 'Sticker',
+  backgroundText: 'Hintergrundtext',
+  backgroundTextPlaceholder: 'z. B. Diese Woche schaffe ich das!',
+  customSticker: 'Eigenen Sticker hinzufügen',
+  removeSticker: 'Sticker entfernen',
   apiKeyRequired: 'Füge in den Einstellungen einen API-Schlüssel hinzu, bevor du ein Bild importierst.',
   visionResponseError: (provider: string, status: number) => `${provider} hat einen Fehler zurückgegeben (${status}).`,
   visionInvalidResponse: 'Der Vision-Anbieter hat eine unlesbare Antwort zurückgegeben.',
@@ -715,6 +731,10 @@ const es: TranslationKeys = {
   uploadBackground: 'Subir fondo',
   removeBackground: 'Quitar fondo',
   stickers: 'Pegatinas',
+  backgroundText: 'Texto del fondo',
+  backgroundTextPlaceholder: 'ej. ¡Esta semana puedo!',
+  customSticker: 'Añadir pegatina propia',
+  removeSticker: 'Quitar pegatina',
   apiKeyRequired: 'Añade una clave API en Ajustes antes de importar una imagen.',
   visionResponseError: (provider: string, status: number) => `${provider} devolvió un error (${status}).`,
   visionInvalidResponse: 'El proveedor de visión devolvió una respuesta ilegible.',
