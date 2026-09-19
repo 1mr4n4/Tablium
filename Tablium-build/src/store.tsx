@@ -10,6 +10,8 @@ const VISION_KEY = 'tablium.vision.v1';
 const CUSTOM_THEME_KEY = 'tablium.custom-theme.v1';
 const BACKUPS_KEY = 'tablium.timetable.backups.v1';
 const MAX_BACKUPS = 5;
+const BACKGROUND_KEY = 'tablium.background.v1';
+const STICKERS_KEY = 'tablium.stickers.v1';
 
 function loadTimetable(): TimetableConfig {
   try {
@@ -47,6 +49,14 @@ function loadVision(): VisionSettings {
   return { provider: 'openai', apiKey: '' };
 }
 
+function loadString(key: string, fallback = ''): string {
+  try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
+}
+
+function loadStickers(): string[] {
+  try { return JSON.parse(localStorage.getItem(STICKERS_KEY) ?? '[]'); } catch { return []; }
+}
+
 function saveBackup(config: TimetableConfig) {
   try {
     const stored = localStorage.getItem(BACKUPS_KEY);
@@ -63,12 +73,15 @@ interface StoreValue {
   theme: ThemeMode;
   customTheme: ThemePalette;
   vision: VisionSettings;
+  backgroundImage: string;
+  stickers: string[];
   visibleSessions: ClassSession[];
   groups: string[];
   setActiveGroup: (group: string | undefined) => void;
   setTimeRange: (startTime: string, endTime: string) => void;
   setTimeSlots: (timeSlots: TimeSlot[]) => void;
   setShowSaturday: (show: boolean) => void;
+  setShowSunday: (show: boolean) => void;
   setCompactGrid: (compact: boolean) => void;
   addSession: (session: Omit<ClassSession, 'id'>) => void;
   updateSession: (id: string, patch: Partial<ClassSession>) => void;
@@ -79,6 +92,8 @@ interface StoreValue {
   setTheme: (theme: ThemeMode) => void;
   setCustomTheme: (theme: ThemePalette) => void;
   setVision: (v: VisionSettings) => void;
+  setBackgroundImage: (image: string) => void;
+  setStickers: (stickers: string[]) => void;
   exportJSON: () => string;
   importJSON: (json: string) => { ok: boolean; error?: string };
   resetTimetable: () => void;
@@ -92,6 +107,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<ThemeMode>(loadTheme);
   const [customTheme, setCustomThemeState] = useState<ThemePalette>(loadCustomTheme);
   const [vision, setVisionState] = useState<VisionSettings>(loadVision);
+  const [backgroundImage, setBackgroundImageState] = useState(() => loadString(BACKGROUND_KEY));
+  const [stickers, setStickersState] = useState<string[]>(loadStickers);
 
   useEffect(() => {
     try {
@@ -126,6 +143,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify(customTheme));
   }, [customTheme]);
 
+  useEffect(() => {
+    localStorage.setItem(BACKGROUND_KEY, backgroundImage);
+    document.documentElement.style.setProperty('--theme-background-image', backgroundImage ? `url(${backgroundImage})` : 'none');
+  }, [backgroundImage]);
+
+  useEffect(() => { localStorage.setItem(STICKERS_KEY, JSON.stringify(stickers)); }, [stickers]);
+
   const groups = useMemo(() => {
     const set = new Set<string>();
     config.sessions.forEach((s) => s.group && set.add(s.group));
@@ -153,6 +177,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const setShowSaturday = useCallback((show: boolean) => {
     setConfig((c) => ({ ...c, showSaturday: show }));
+  }, []);
+
+  const setShowSunday = useCallback((show: boolean) => {
+    setConfig((c) => ({ ...c, showSunday: show }));
   }, []);
 
   const setCompactGrid = useCallback((compact: boolean) => {
@@ -202,6 +230,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         id: newId(),
         timeSlots: current.timeSlots,
         showSaturday: current.showSaturday,
+        showSunday: current.showSunday,
         compactGrid: current.compactGrid,
         sessions: [],
         activeGroup: undefined,
@@ -240,6 +269,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setVisionState(v);
   }, []);
 
+  const setBackgroundImage = useCallback((image: string) => setBackgroundImageState(image), []);
+  const setStickers = useCallback((nextStickers: string[]) => setStickersState(nextStickers.slice(-8)), []);
+
   const exportJSON = useCallback(() => JSON.stringify(config, null, 2), [config]);
 
   const importJSON = useCallback((json: string): { ok: boolean; error?: string } => {
@@ -254,6 +286,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         activeGroup: parsed.activeGroup,
         timeSlots: parsed.timeSlots ?? defaultTimetable.timeSlots,
         showSaturday: parsed.showSaturday ?? defaultTimetable.showSaturday,
+        showSunday: parsed.showSunday ?? defaultTimetable.showSunday,
         compactGrid: parsed.compactGrid ?? defaultTimetable.compactGrid,
         sessions: parsed.sessions,
       });
@@ -268,12 +301,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     theme,
     customTheme,
     vision,
+    backgroundImage,
+    stickers,
     visibleSessions,
     groups,
     setActiveGroup,
     setTimeRange,
     setTimeSlots,
     setShowSaturday,
+    setShowSunday,
     setCompactGrid,
     addSession,
     updateSession,
@@ -284,6 +320,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setTheme: setThemeChoice,
     setCustomTheme,
     setVision,
+    setBackgroundImage,
+    setStickers,
     exportJSON,
     importJSON,
     resetTimetable,

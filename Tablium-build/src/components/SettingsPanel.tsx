@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Sun, Moon, ImageUp, Download, Upload, CalendarDays, Loader2, AlertCircle, CheckCircle2, Clock3, RotateCcw, History } from 'lucide-react';
+import { Sun, Moon, ImageUp, Download, Upload, CalendarDays, Loader2, AlertCircle, CheckCircle2, Clock3, RotateCcw, History, Palette, X } from 'lucide-react';
 import Panel from './Panel';
 import { useStore } from '../store';
 import { useLang } from '../i18n';
@@ -25,11 +25,14 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     theme,
     customTheme,
     vision,
+    backgroundImage,
+    stickers,
     groups,
     setActiveGroup,
     setTimeRange,
     setTimeSlots,
     setShowSaturday,
+    setShowSunday,
     setCompactGrid,
     toggleTheme,
     setTheme,
@@ -37,6 +40,8 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     resetTimetable,
     restoreBackup,
     setVision,
+    setBackgroundImage,
+    setStickers,
     exportJSON,
     importJSON,
     replaceSessions,
@@ -45,6 +50,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const jsonInputRef = useRef<HTMLInputElement>(null);
+  const backgroundInputRef = useRef<HTMLInputElement>(null);
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState<{ type: 'ok' | 'error'; text: string } | null>(null);
 
@@ -104,6 +110,19 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
   function handleExportICS() {
     downloadFile('tablium.ics', exportToICS(config), 'text/calendar');
+  }
+
+  function handleBackgroundUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setBackgroundImage(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  function toggleSticker(sticker: string) {
+    setStickers(stickers.includes(sticker) ? stickers.filter((item) => item !== sticker) : [...stickers, sticker]);
   }
 
   function handleReset() {
@@ -240,6 +259,24 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           </div>
         </section>
 
+        <section>
+          <h3 className={sectionTitle}>{t.personalization}</h3>
+          <div className="space-y-2 rounded-lg glass p-3">
+            <div className="flex items-center justify-between gap-2 text-xs text-ink-600 dark:text-ink-400">
+              <span className="flex items-center gap-1.5"><Palette size={14} /> {t.background}</span>
+              <div className="flex gap-1.5">
+                <input ref={backgroundInputRef} type="file" accept="image/*" className="hidden" onChange={handleBackgroundUpload} />
+                <button onClick={() => backgroundInputRef.current?.click()} className="focus-ring rounded-lg bg-brand px-2.5 py-1.5 text-xs font-medium text-white dark:bg-live dark:text-ink-800">{t.uploadBackground}</button>
+                {backgroundImage && <button onClick={() => setBackgroundImage('')} aria-label={t.removeBackground} title={t.removeBackground} className="focus-ring rounded-lg p-1.5 text-ink-500 hover:bg-ink/[0.08]"><X size={14} /></button>}
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 border-t border-ink/[0.08] pt-2 dark:border-white/[0.08]">
+              <span className="mr-1 text-xs text-ink-500 dark:text-ink-400">{t.stickers}</span>
+              {['📚', '✏️', '🎓', '☕', '⭐', '🧠', '📌', '🌱'].map((sticker) => <button key={sticker} onClick={() => toggleSticker(sticker)} className={`focus-ring rounded-lg p-1.5 text-lg ${stickers.includes(sticker) ? 'bg-brand/15 ring-1 ring-brand' : 'hover:bg-ink/[0.06]'}`}>{sticker}</button>)}
+            </div>
+          </div>
+        </section>
+
         {/* Timetable range */}
         <section>
           <h3 className={sectionTitle}>{t.scheduleRange}</h3>
@@ -311,6 +348,10 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
             <label className="flex cursor-pointer items-center justify-between rounded-lg glass px-3 py-2.5 text-sm text-ink-800 dark:text-paper">
               {t.showSaturday}
               <input type="checkbox" checked={config.showSaturday !== false} onChange={(e) => setShowSaturday(e.target.checked)} className="accent-brand" />
+            </label>
+            <label className="flex cursor-pointer items-center justify-between rounded-lg glass px-3 py-2.5 text-sm text-ink-800 dark:text-paper">
+              {t.showSunday}
+              <input type="checkbox" checked={config.showSunday === true} onChange={(e) => setShowSunday(e.target.checked)} className="accent-brand" />
             </label>
             <label className="flex cursor-pointer items-center justify-between rounded-lg glass px-3 py-2.5 text-sm text-ink-800 dark:text-paper">
               {t.compactGrid}

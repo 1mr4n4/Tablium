@@ -7,6 +7,7 @@ export const DAY_INDEX: Record<Day, number> = {
   Jeudi: 4,
   Vendredi: 5,
   Samedi: 6,
+  Dimanche: 0,
 };
 
 export function timeToMinutes(t: string): number {
@@ -174,6 +175,7 @@ const ICS_DAY: Record<Day, string> = {
   Jeudi: 'TH',
   Vendredi: 'FR',
   Samedi: 'SA',
+  Dimanche: 'SU',
 };
 
 function pad(n: number): string {

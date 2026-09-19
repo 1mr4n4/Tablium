@@ -56,6 +56,7 @@ const DAY_KEY: Record<Day, string> = {
   Jeudi: 'dayJeudi',
   Vendredi: 'dayVendredi',
   Samedi: 'daySamedi',
+  Dimanche: 'dayDimanche',
 };
 
 export default function SessionModal({

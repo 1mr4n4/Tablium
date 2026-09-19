@@ -99,6 +99,7 @@ type TranslationKeys = {
   endTime: string;
   displayOptions: string;
   showSaturday: string;
+  showSunday: string;
   compactGrid: string;
   schedulePeriods: string;
   dragToMove: string;
@@ -121,6 +122,11 @@ type TranslationKeys = {
   restoreBackup: string;
   noBackup: string;
   resetConfirm: string;
+  personalization: string;
+  background: string;
+  uploadBackground: string;
+  removeBackground: string;
+  stickers: string;
   apiKeyRequired: string;
   visionResponseError: (provider: string, status: number) => string;
   visionInvalidResponse: string;
@@ -145,6 +151,7 @@ type TranslationKeys = {
   dayJeudi: string;
   dayVendredi: string;
   daySamedi: string;
+  dayDimanche: string;
 
   // Empty state
   workspace: string;
@@ -245,6 +252,7 @@ const en: TranslationKeys = {
   endTime: 'Ends at',
   displayOptions: 'Display options',
   showSaturday: 'Show Saturday',
+  showSunday: 'Show Sunday',
   compactGrid: 'Compact desktop rows',
   schedulePeriods: 'Periods and breaks',
   dragToMove: 'Drag the arrow to move',
@@ -267,6 +275,11 @@ const en: TranslationKeys = {
   restoreBackup: 'Restore latest backup',
   noBackup: 'No backup is available yet.',
   resetConfirm: 'Start over? Your current timetable will be backed up first.',
+  personalization: 'Personalization',
+  background: 'Background',
+  uploadBackground: 'Upload background',
+  removeBackground: 'Remove background',
+  stickers: 'Stickers',
   apiKeyRequired: 'Add an API key in Settings before importing an image.',
   visionResponseError: (provider: string, status: number) => `${provider} returned an error (${status}).`,
   visionInvalidResponse: 'The vision provider returned an unreadable response.',
@@ -285,6 +298,7 @@ const en: TranslationKeys = {
   dayJeudi: 'Thursday',
   dayVendredi: 'Friday',
   daySamedi: 'Saturday',
+  dayDimanche: 'Sunday',
   workspace: 'Workspace',
   workspaceDescription: 'A little room for the things around your schedule.',
   openWorkspace: 'Open workspace',
@@ -383,6 +397,7 @@ const fr: TranslationKeys = {
   endTime: 'Finit à',
   displayOptions: 'Affichage',
   showSaturday: 'Afficher le samedi',
+  showSunday: 'Afficher le dimanche',
   compactGrid: 'Lignes compactes sur ordinateur',
   schedulePeriods: 'Périodes et pauses',
   dragToMove: 'Faites glisser la flèche pour déplacer',
@@ -405,6 +420,11 @@ const fr: TranslationKeys = {
   restoreBackup: 'Restaurer la dernière sauvegarde',
   noBackup: 'Aucune sauvegarde disponible pour le moment.',
   resetConfirm: 'Recommencer ? Votre emploi du temps actuel sera d’abord sauvegardé.',
+  personalization: 'Personnalisation',
+  background: 'Arrière-plan',
+  uploadBackground: 'Importer un arrière-plan',
+  removeBackground: 'Supprimer l’arrière-plan',
+  stickers: 'Autocollants',
   apiKeyRequired: 'Ajoutez une clé API dans les paramètres avant d’importer une image.',
   visionResponseError: (provider: string, status: number) => `${provider} a renvoyé une erreur (${status}).`,
   visionInvalidResponse: 'Le fournisseur de vision a renvoyé une réponse illisible.',
@@ -423,6 +443,7 @@ const fr: TranslationKeys = {
   dayJeudi: 'Jeudi',
   dayVendredi: 'Vendredi',
   daySamedi: 'Samedi',
+  dayDimanche: 'Dimanche',
   workspace: 'Espace de travail',
   workspaceDescription: 'Un petit espace pour ce qui accompagne votre emploi du temps.',
   openWorkspace: 'Ouvrir l’espace de travail',
@@ -521,6 +542,7 @@ const de: TranslationKeys = {
   endTime: 'Ende um',
   displayOptions: 'Anzeigeoptionen',
   showSaturday: 'Samstag anzeigen',
+  showSunday: 'Sonntag anzeigen',
   compactGrid: 'Kompakte Zeilen auf dem Desktop',
   schedulePeriods: 'Zeiträume und Pausen',
   dragToMove: 'Pfeil zum Verschieben ziehen',
@@ -543,6 +565,11 @@ const de: TranslationKeys = {
   restoreBackup: 'Letzte Sicherung wiederherstellen',
   noBackup: 'Noch keine Sicherung verfügbar.',
   resetConfirm: 'Neu beginnen? Dein aktueller Stundenplan wird zuerst gesichert.',
+  personalization: 'Personalisierung',
+  background: 'Hintergrund',
+  uploadBackground: 'Hintergrund hochladen',
+  removeBackground: 'Hintergrund entfernen',
+  stickers: 'Sticker',
   apiKeyRequired: 'Füge in den Einstellungen einen API-Schlüssel hinzu, bevor du ein Bild importierst.',
   visionResponseError: (provider: string, status: number) => `${provider} hat einen Fehler zurückgegeben (${status}).`,
   visionInvalidResponse: 'Der Vision-Anbieter hat eine unlesbare Antwort zurückgegeben.',
@@ -561,6 +588,7 @@ const de: TranslationKeys = {
   dayJeudi: 'Donnerstag',
   dayVendredi: 'Freitag',
   daySamedi: 'Samstag',
+  dayDimanche: 'Sonntag',
   workspace: 'Arbeitsbereich',
   workspaceDescription: 'Ein kleiner Raum für alles rund um deinen Stundenplan.',
   openWorkspace: 'Arbeitsbereich öffnen',
@@ -659,6 +687,7 @@ const es: TranslationKeys = {
   endTime: 'Termina a las',
   displayOptions: 'Opciones de visualización',
   showSaturday: 'Mostrar sábado',
+  showSunday: 'Mostrar domingo',
   compactGrid: 'Filas compactas en escritorio',
   schedulePeriods: 'Periodos y pausas',
   dragToMove: 'Arrastra la flecha para mover',
@@ -681,6 +710,11 @@ const es: TranslationKeys = {
   restoreBackup: 'Restaurar última copia',
   noBackup: 'Aún no hay ninguna copia disponible.',
   resetConfirm: '¿Empezar de cero? Tu horario actual se guardará primero.',
+  personalization: 'Personalización',
+  background: 'Fondo',
+  uploadBackground: 'Subir fondo',
+  removeBackground: 'Quitar fondo',
+  stickers: 'Pegatinas',
   apiKeyRequired: 'Añade una clave API en Ajustes antes de importar una imagen.',
   visionResponseError: (provider: string, status: number) => `${provider} devolvió un error (${status}).`,
   visionInvalidResponse: 'El proveedor de visión devolvió una respuesta ilegible.',
@@ -699,6 +733,7 @@ const es: TranslationKeys = {
   dayJeudi: 'Jueves',
   dayVendredi: 'Viernes',
   daySamedi: 'Sábado',
+  dayDimanche: 'Domingo',
   workspace: 'Espacio de trabajo',
   workspaceDescription: 'Un pequeño espacio para todo lo que acompaña a tu horario.',
   openWorkspace: 'Abrir espacio de trabajo',

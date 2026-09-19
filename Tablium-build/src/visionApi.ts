@@ -6,7 +6,7 @@ const EXTRACTION_PROMPT = `You are given an image of a university/school weekly 
 Extract every class session you can see and return ONLY a raw JSON array (no markdown fences, no prose) where each item has exactly this shape:
 
 {
-  "day": "Lundi" | "Mardi" | "Mercredi" | "Jeudi" | "Vendredi" | "Samedi",
+  "day": "Lundi" | "Mardi" | "Mercredi" | "Jeudi" | "Vendredi" | "Samedi" | "Dimanche",
   "startTime": "HH:MM",
   "endTime": "HH:MM",
   "subject": string,

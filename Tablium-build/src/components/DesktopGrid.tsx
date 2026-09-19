@@ -38,6 +38,7 @@ const DAY_KEY: Record<Day, string> = {
   Jeudi: 'dayJeudi',
   Vendredi: 'dayVendredi',
   Samedi: 'daySamedi',
+  Dimanche: 'dayDimanche',
 };
 
 export default function DesktopGrid({ config, sessions, onSessionClick, onEmptySlotClick, onMoveSession }: DesktopGridProps) {
@@ -51,7 +52,7 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
 
   const todayDow = now.getDay();
   const todayName = DAYS.find((d) => {
-    const map: Record<Day, number> = { Lundi: 1, Mardi: 2, Mercredi: 3, Jeudi: 4, Vendredi: 5, Samedi: 6 };
+    const map: Record<Day, number> = { Lundi: 1, Mardi: 2, Mercredi: 3, Jeudi: 4, Vendredi: 5, Samedi: 6, Dimanche: 0 };
     return map[d] === todayDow;
   });
 
@@ -66,7 +67,7 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
 
   const cols = timeSlots.length;
 
-  const visibleDays = config.showSaturday === false ? DAYS.filter((day) => day !== 'Samedi') : DAYS;
+  const visibleDays = DAYS.filter((day) => day !== 'Samedi' || config.showSaturday !== false).filter((day) => day !== 'Dimanche' || config.showSunday === true);
   const gridStyle = {
     gridTemplateColumns: `100px repeat(${cols}, minmax(180px, 1fr))`,
     minWidth: `${100 + cols * 180}px`,

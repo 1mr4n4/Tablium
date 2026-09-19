@@ -9,6 +9,7 @@ import SessionCard from './SessionCard';
 interface MobileTimetableProps {
   sessions: ClassSession[];
   showSaturday?: boolean;
+  showSunday?: boolean;
   onSessionClick: (session: ClassSession) => void;
   onAddClick: (day: Day) => void;
 }
@@ -20,21 +21,22 @@ const DAY_KEY: Record<Day, string> = {
   Jeudi: 'dayJeudi',
   Vendredi: 'dayVendredi',
   Samedi: 'daySamedi',
+  Dimanche: 'dayDimanche',
 };
 
-export default function MobileTimetable({ sessions, showSaturday = true, onSessionClick, onAddClick }: MobileTimetableProps) {
+export default function MobileTimetable({ sessions, showSaturday = true, showSunday = false, onSessionClick, onAddClick }: MobileTimetableProps) {
   const { t } = useLang();
   const todayJs = new Date().getDay();
   const todayName = DAYS.find((d) => DAY_INDEX[d] === todayJs);
   const [activeDay, setActiveDay] = useState<Day>(todayName ?? 'Lundi');
   const [direction, setDirection] = useState(0);
 
-  const visibleDays = showSaturday ? DAYS : DAYS.filter((day) => day !== 'Samedi');
+  const visibleDays = DAYS.filter((day) => day !== 'Samedi' || showSaturday).filter((day) => day !== 'Dimanche' || showSunday);
   const activeIndex = visibleDays.indexOf(activeDay);
 
   useEffect(() => {
-    if (!showSaturday && activeDay === 'Samedi') setActiveDay('Lundi');
-  }, [showSaturday, activeDay]);
+    if ((!showSaturday && activeDay === 'Samedi') || (!showSunday && activeDay === 'Dimanche')) setActiveDay('Lundi');
+  }, [showSaturday, showSunday, activeDay]);
 
   function goTo(index: number) {
     const clamped = Math.max(0, Math.min(visibleDays.length - 1, index));

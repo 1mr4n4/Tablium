@@ -21,6 +21,10 @@
     @apply bg-paper text-ink-800 dark:bg-ink dark:text-paper font-sans antialiased;
     background-color: var(--theme-paper) !important;
     color: var(--theme-ink) !important;
+    background-image: var(--theme-background-image);
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
     overscroll-behavior-y: none;
     min-width: 320px;
     min-height: 100dvh;

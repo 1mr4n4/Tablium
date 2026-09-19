@@ -1,8 +1,8 @@
 export type SessionType = 'Cours' | 'TD' | 'TP' | 'Examen' | 'Autre';
 
-export type Day = 'Lundi' | 'Mardi' | 'Mercredi' | 'Jeudi' | 'Vendredi' | 'Samedi';
+export type Day = 'Lundi' | 'Mardi' | 'Mercredi' | 'Jeudi' | 'Vendredi' | 'Samedi' | 'Dimanche';
 
-export const DAYS: Day[] = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+export const DAYS: Day[] = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
 export const SESSION_TYPES: SessionType[] = ['Cours', 'TD', 'TP', 'Examen', 'Autre'];
 
@@ -43,6 +43,7 @@ export interface TimetableConfig {
   timeSlots: TimeSlot[];
   sessions: ClassSession[];
   showSaturday?: boolean;
+  showSunday?: boolean;
   compactGrid?: boolean;
 }
 

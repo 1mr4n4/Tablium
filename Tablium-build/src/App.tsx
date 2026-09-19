@@ -13,7 +13,7 @@ import LanguageSwitcher from './components/LanguageSwitcher';
 import WorkspaceTools, { ToolId, WorkspaceLauncher, WorkspaceSide } from './components/WorkspaceTools';
 
 function Dashboard() {
-  const { config, visibleSessions, groups, updateSession, addSession, deleteSession, duplicateSession } =
+  const { config, visibleSessions, groups, stickers, updateSession, addSession, deleteSession, duplicateSession } =
     useStore();
   const { t } = useLang();
 
@@ -95,7 +95,12 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="relative min-h-screen">
+      {stickers.map((sticker, index) => (
+        <span key={`${sticker}-${index}`} className="pointer-events-none fixed z-10 select-none text-2xl opacity-70" style={{ right: `${8 + (index % 4) * 8}%`, top: `${18 + Math.floor(index / 4) * 18}%` }}>
+          {sticker}
+        </span>
+      ))}
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-ink/[0.08] bg-paper/85 backdrop-blur-md dark:border-white/[0.08] dark:bg-ink/85">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
@@ -147,6 +152,7 @@ function Dashboard() {
               <MobileTimetable
                 sessions={visibleSessions}
                 showSaturday={config.showSaturday}
+                showSunday={config.showSunday}
                 onSessionClick={openSession}
                 onAddClick={(day) => openCreate(day)}
               />
