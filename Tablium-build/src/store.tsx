@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
-import { ClassSession, ThemeMode, TimeSlot, TimetableConfig, VisionSettings } from './types';
+import { ClassSession, Sticker, ThemeMode, TimeSlot, TimetableConfig, VisionSettings } from './types';
 import { defaultTimetable } from './data/sampleData';
 import { createTimeSlots, newId } from './utils';
 import { DEFAULT_CUSTOM_THEME, THEME_PRESETS, ThemePalette } from './themes';
@@ -54,8 +54,13 @@ function loadString(key: string, fallback = ''): string {
   try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
 }
 
-function loadStickers(): string[] {
-  try { return JSON.parse(localStorage.getItem(STICKERS_KEY) ?? '[]'); } catch { return []; }
+function loadStickers(): Sticker[] {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STICKERS_KEY) ?? '[]');
+    return saved.map((sticker: Sticker | string, index: number) => typeof sticker === 'string'
+      ? { id: newId(), content: sticker, x: 12 + (index % 4) * 20, y: 20 + Math.floor(index / 4) * 18, rotation: (index % 3 - 1) * 8, scale: 1 }
+      : sticker);
+  } catch { return []; }
 }
 
 function saveBackup(config: TimetableConfig) {
@@ -75,7 +80,7 @@ interface StoreValue {
   customTheme: ThemePalette;
   vision: VisionSettings;
   backgroundImage: string;
-  stickers: string[];
+  stickers: Sticker[];
   backgroundText: string;
   visibleSessions: ClassSession[];
   groups: string[];
@@ -95,7 +100,9 @@ interface StoreValue {
   setCustomTheme: (theme: ThemePalette) => void;
   setVision: (v: VisionSettings) => void;
   setBackgroundImage: (image: string) => void;
-  setStickers: (stickers: string[]) => void;
+  setStickers: (stickers: Sticker[]) => void;
+  updateSticker: (id: string, patch: Partial<Sticker>) => void;
+  addGroup: (group: string) => void;
   setBackgroundText: (text: string) => void;
   exportJSON: () => string;
   importJSON: (json: string) => { ok: boolean; error?: string };
@@ -111,7 +118,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [customTheme, setCustomThemeState] = useState<ThemePalette>(loadCustomTheme);
   const [vision, setVisionState] = useState<VisionSettings>(loadVision);
   const [backgroundImage, setBackgroundImageState] = useState(() => loadString(BACKGROUND_KEY));
-  const [stickers, setStickersState] = useState<string[]>(loadStickers);
+  const [stickers, setStickersState] = useState<Sticker[]>(loadStickers);
   const [backgroundText, setBackgroundTextState] = useState(() => loadString(BACKGROUND_TEXT_KEY));
 
   useEffect(() => {
@@ -156,10 +163,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => { localStorage.setItem(BACKGROUND_TEXT_KEY, backgroundText); }, [backgroundText]);
 
   const groups = useMemo(() => {
-    const set = new Set<string>();
+    const set = new Set<string>(config.groups ?? []);
     config.sessions.forEach((s) => s.group && set.add(s.group));
     return Array.from(set).sort();
-  }, [config.sessions]);
+  }, [config.sessions, config.groups]);
 
   const visibleSessions = useMemo(() => {
     if (!config.activeGroup) return config.sessions;
@@ -168,6 +175,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const setActiveGroup = useCallback((group: string | undefined) => {
     setConfig((c) => ({ ...c, activeGroup: group }));
+  }, []);
+
+  const addGroup = useCallback((group: string) => {
+    const name = group.trim();
+    if (!name) return;
+    setConfig((c) => ({ ...c, groups: Array.from(new Set([...(c.groups ?? []), name])) }));
   }, []);
 
   const setTimeRange = useCallback((startTime: string, endTime: string) => {
@@ -238,6 +251,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         showSunday: current.showSunday,
         compactGrid: current.compactGrid,
         sessions: [],
+        groups: [],
         activeGroup: undefined,
       };
     });
@@ -275,7 +289,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setBackgroundImage = useCallback((image: string) => setBackgroundImageState(image), []);
-  const setStickers = useCallback((nextStickers: string[]) => setStickersState(nextStickers.slice(-8)), []);
+  const setStickers = useCallback((nextStickers: Sticker[]) => setStickersState(nextStickers.slice(-12)), []);
+  const updateSticker = useCallback((id: string, patch: Partial<Sticker>) => {
+    setStickersState((current) => current.map((sticker) => sticker.id === id ? { ...sticker, ...patch } : sticker));
+  }, []);
   const setBackgroundText = useCallback((text: string) => setBackgroundTextState(text.slice(0, 120)), []);
 
   const exportJSON = useCallback(() => JSON.stringify(config, null, 2), [config]);
@@ -295,6 +312,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         showSunday: parsed.showSunday ?? defaultTimetable.showSunday,
         compactGrid: parsed.compactGrid ?? defaultTimetable.compactGrid,
         sessions: parsed.sessions,
+        groups: parsed.groups ?? [],
       });
       return { ok: true };
     } catch (e) {
@@ -313,6 +331,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     visibleSessions,
     groups,
     setActiveGroup,
+    addGroup,
     setTimeRange,
     setTimeSlots,
     setShowSaturday,
@@ -329,6 +348,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setVision,
     setBackgroundImage,
     setStickers,
+    updateSticker,
     setBackgroundText,
     exportJSON,
     importJSON,

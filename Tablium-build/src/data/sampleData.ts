@@ -14,4 +14,5 @@ export const defaultTimetable: TimetableConfig = {
     { startTime: '16:00', endTime: '17:45' },
   ],
   sessions: [],
+  groups: [],
 };

@@ -42,9 +42,19 @@ export interface TimetableConfig {
   activeGroup?: string;
   timeSlots: TimeSlot[];
   sessions: ClassSession[];
+  groups?: string[];
   showSaturday?: boolean;
   showSunday?: boolean;
   compactGrid?: boolean;
+}
+
+export interface Sticker {
+  id: string;
+  content: string;
+  x: number;
+  y: number;
+  rotation: number;
+  scale: number;
 }
 
 export type VisionProvider = 'openai' | 'anthropic' | 'gemini';

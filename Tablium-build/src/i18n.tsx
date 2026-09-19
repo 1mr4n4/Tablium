@@ -78,6 +78,8 @@ type TranslationKeys = {
   change: string;
   groupFiliere: string;
   groupDescription: string;
+  addGroup: string;
+  groupNamePlaceholder: string;
   importImage: string;
   importImageDescription: string;
   apiKey: string;
@@ -234,7 +236,9 @@ const en: TranslationKeys = {
   lightTheme: 'Light theme',
   change: 'Change',
   groupFiliere: 'Group / Program',
-  groupDescription: 'Hide sessions from other groups to only see yours (e.g. TD Marketing S1 vs S2).',
+  groupDescription: 'Hide sessions from other groups to only see the groups you select.',
+  addGroup: 'Add group',
+  groupNamePlaceholder: 'Group name',
   importImage: 'Import image',
   importImageDescription: 'Analyze a photo of your timetable with a vision model. Your key stays only in this browser.',
   apiKey: 'API key',
@@ -383,7 +387,9 @@ const fr: TranslationKeys = {
   lightTheme: 'Thème clair',
   change: 'Changer',
   groupFiliere: 'Groupe / Filière',
-  groupDescription: 'Masquez les séances des autres groupes pour ne voir que les vôtres (ex. TD Marketing S1 vs S2).',
+  groupDescription: 'Masquez les séances des autres groupes pour ne voir que ceux que vous sélectionnez.',
+  addGroup: 'Ajouter un groupe',
+  groupNamePlaceholder: 'Nom du groupe',
   importImage: 'Importer une image',
   importImageDescription: 'Analysez une photo de votre emploi du temps avec un modèle de vision. Votre clé reste uniquement dans ce navigateur.',
   apiKey: 'Clé API',
@@ -532,7 +538,9 @@ const de: TranslationKeys = {
   lightTheme: 'Helles Thema',
   change: 'Ändern',
   groupFiliere: 'Gruppe / Fachrichtung',
-  groupDescription: 'Verstecken Sie Sitzungen anderer Gruppen, um nur Ihre eigenen zu sehen (z.B. TD Marketing S1 vs S2).',
+  groupDescription: 'Blenden Sie andere Gruppen aus und zeigen Sie nur ausgewählte Gruppen.',
+  addGroup: 'Gruppe hinzufügen',
+  groupNamePlaceholder: 'Gruppenname',
   importImage: 'Bild importieren',
   importImageDescription: 'Analysieren Sie ein Foto Ihres Stundenplans mit einem Vision-Modell. Ihr Schlüssel bleibt nur in diesem Browser.',
   apiKey: 'API-Schlüssel',
@@ -681,7 +689,9 @@ const es: TranslationKeys = {
   lightTheme: 'Tema claro',
   change: 'Cambiar',
   groupFiliere: 'Grupo / Programa',
-  groupDescription: 'Oculta sesiones de otros grupos para ver solo las tuyas (ej. TD Marketing S1 vs S2).',
+  groupDescription: 'Oculta otros grupos para mostrar solo los grupos que selecciones.',
+  addGroup: 'Añadir grupo',
+  groupNamePlaceholder: 'Nombre del grupo',
   importImage: 'Importar imagen',
   importImageDescription: 'Analiza una foto de tu horario con un modelo de visión. Tu clave solo se guarda en este navegador.',
   apiKey: 'Clave API',

@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react';
-import { Sun, Moon, ImageUp, Download, Upload, CalendarDays, Loader2, AlertCircle, CheckCircle2, Clock3, RotateCcw, History, Palette, X } from 'lucide-react';
+import { Sun, Moon, ImageUp, Download, Upload, CalendarDays, Loader2, AlertCircle, CheckCircle2, Clock3, RotateCcw, History, Palette, X, Plus } from 'lucide-react';
 import Panel from './Panel';
 import { useStore } from '../store';
 import { useLang } from '../i18n';
 import { parseTimetableImage } from '../visionApi';
-import { downloadFile, exportToICS } from '../utils';
+import { downloadFile, exportToICS, newId } from '../utils';
 import { ThemeId, TimeSlot, VisionProvider } from '../types';
 import { ThemePalette } from '../themes';
 
@@ -47,6 +47,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     exportJSON,
     importJSON,
     replaceSessions,
+    addGroup,
   } = useStore();
   const { t } = useLang();
 
@@ -56,6 +57,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const stickerInputRef = useRef<HTMLInputElement>(null);
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState<{ type: 'ok' | 'error'; text: string } | null>(null);
+  const [newGroupName, setNewGroupName] = useState('');
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -125,7 +127,14 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   }
 
   function toggleSticker(sticker: string) {
-    setStickers(stickers.includes(sticker) ? stickers.filter((item) => item !== sticker) : [...stickers, sticker]);
+    const existing = stickers.find((item) => item.content === sticker);
+    setStickers(existing ? stickers.filter((item) => item.id !== existing.id) : [...stickers, { id: newId(), content: sticker, x: 12 + (stickers.length % 4) * 20, y: 20 + Math.floor(stickers.length / 4) * 18, rotation: Math.round(Math.random() * 20 - 10), scale: 1 }]);
+  }
+
+  function handleAddGroup() {
+    if (!newGroupName.trim()) return;
+    addGroup(newGroupName);
+    setNewGroupName('');
   }
 
   function handleStickerUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -133,7 +142,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     e.target.value = '';
     if (!file || !file.type.startsWith('image/')) return;
     const reader = new FileReader();
-    reader.onload = () => setStickers([...stickers, reader.result as string]);
+    reader.onload = () => setStickers([...stickers, { id: newId(), content: reader.result as string, x: 50, y: 35, rotation: 0, scale: 1 }]);
     reader.readAsDataURL(file);
   }
 
@@ -268,6 +277,10 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                 {g}
               </button>
             ))}
+            <div className="flex items-center gap-1">
+              <input value={newGroupName} onChange={(e) => setNewGroupName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddGroup()} placeholder={t.groupNamePlaceholder} className={`${inputClasses} w-28 px-2 py-1.5 text-xs`} />
+              <button onClick={handleAddGroup} aria-label={t.addGroup} title={t.addGroup} className="focus-ring rounded-full bg-brand p-1.5 text-white dark:bg-live dark:text-ink-800"><Plus size={14} /></button>
+            </div>
           </div>
         </section>
 
@@ -286,13 +299,18 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               {t.backgroundText}
               <input value={backgroundText} onChange={(e) => setBackgroundText(e.target.value)} maxLength={120} placeholder={t.backgroundTextPlaceholder} className={`${inputClasses} mt-1`} />
             </label>
+          </div>
+        </section>
+
+        <section>
+          <h3 className={sectionTitle}>{t.stickers}</h3>
+          <div className="space-y-2 rounded-lg glass p-3">
             <div className="flex flex-wrap items-center gap-1.5 border-t border-ink/[0.08] pt-2 dark:border-white/[0.08]">
-              <span className="mr-1 text-xs text-ink-500 dark:text-ink-400">{t.stickers}</span>
-              {['📚', '✏️', '🎓', '☕', '⭐', '🧠', '📌', '🌱'].map((sticker) => <button key={sticker} onClick={() => toggleSticker(sticker)} className={`focus-ring rounded-lg p-1.5 text-lg ${stickers.includes(sticker) ? 'bg-brand/15 ring-1 ring-brand' : 'hover:bg-ink/[0.06]'}`}>{sticker}</button>)}
+              {['📚', '✏️', '🎓', '☕', '⭐', '🧠', '📌', '🌱', '💡', '🚀', '🎯', '📝'].map((sticker) => <button key={sticker} onClick={() => toggleSticker(sticker)} className={`focus-ring rounded-lg p-1.5 text-lg ${stickers.some((item) => item.content === sticker) ? 'bg-brand/15 ring-1 ring-brand' : 'hover:bg-ink/[0.06]'}`}>{sticker}</button>)}
               <input ref={stickerInputRef} type="file" accept="image/*" className="hidden" onChange={handleStickerUpload} />
               <button onClick={() => stickerInputRef.current?.click()} className="focus-ring rounded-lg bg-brand px-2 py-1.5 text-xs font-medium text-white dark:bg-live dark:text-ink-800">+ {t.customSticker}</button>
             </div>
-            {stickers.some((sticker) => sticker.startsWith('data:image/')) && <div className="flex flex-wrap gap-2 border-t border-ink/[0.08] pt-2 dark:border-white/[0.08]">{stickers.map((sticker, index) => sticker.startsWith('data:image/') && <button key={`${sticker}-${index}`} onClick={() => setStickers(stickers.filter((_, stickerIndex) => stickerIndex !== index))} title={t.removeSticker} aria-label={t.removeSticker} className="focus-ring rounded-lg border border-ink/[0.1] p-1 hover:ring-1 hover:ring-brand"><img src={sticker} alt="" className="h-8 w-8 object-contain" /></button>)}</div>}
+            {stickers.some((sticker) => sticker.content.startsWith('data:image/')) && <div className="flex flex-wrap gap-2 border-t border-ink/[0.08] pt-2 dark:border-white/[0.08]">{stickers.map((sticker) => sticker.content.startsWith('data:image/') && <button key={sticker.id} onClick={() => setStickers(stickers.filter((item) => item.id !== sticker.id))} title={t.removeSticker} aria-label={t.removeSticker} className="focus-ring rounded-lg border border-ink/[0.1] p-1 hover:ring-1 hover:ring-brand"><img src={sticker.content} alt="" className="h-8 w-8 object-contain" /></button>)}</div>}
           </div>
         </section>
 
