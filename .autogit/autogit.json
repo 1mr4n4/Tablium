@@ -1,9 +1,0 @@
-{
-  "runOnStart": true,
-  "logging": true,
-  "silent": true,
-  "updateInterval": 300,
-  "commitMessage": "{ts.locale.date} {ts.locale.time}",
-  "locale": "en-US",
-  "timeZone": "Europe/Berlin"
-}

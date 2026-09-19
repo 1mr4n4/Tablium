@@ -1,7 +1,6 @@
-# Ignore .vscode except settings for GitDoc
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
+# Local editor and automation configuration
+.vscode/
+.autogit/
 .autogit/logs/
 Tablium-build/*.tsbuildinfo
 Tablium-build/vite.config.js
