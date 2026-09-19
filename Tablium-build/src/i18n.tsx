@@ -149,6 +149,7 @@ type TranslationKeys = {
   openWorkspaceRight: string;
   pinWorkspace: string;
   unpinWorkspace: string;
+  switchApp: string;
   calculator: string;
   paint: string;
   game: string;
@@ -281,6 +282,7 @@ const en: TranslationKeys = {
   openWorkspaceRight: 'Open workspace on the right',
   pinWorkspace: 'Pin workspace open',
   unpinWorkspace: 'Unpin workspace',
+  switchApp: 'Swap app positions',
   calculator: 'Calculator',
   paint: 'Paint pad',
   game: 'Mini game',
@@ -413,6 +415,7 @@ const fr: TranslationKeys = {
   openWorkspaceRight: 'Ouvrir à droite',
   pinWorkspace: 'Garder ouvert',
   unpinWorkspace: 'Ne plus garder ouvert',
+  switchApp: 'Inverser les positions',
   calculator: 'Calculatrice',
   paint: 'Carnet de dessin',
   game: 'Mini-jeu',
@@ -545,6 +548,7 @@ const de: TranslationKeys = {
   openWorkspaceRight: 'Rechts öffnen',
   pinWorkspace: 'Arbeitsbereich anheften',
   unpinWorkspace: 'Arbeitsbereich lösen',
+  switchApp: 'App-Positionen tauschen',
   calculator: 'Taschenrechner',
   paint: 'Zeichenfläche',
   game: 'Minispiel',
@@ -677,6 +681,7 @@ const es: TranslationKeys = {
   openWorkspaceRight: 'Abrir a la derecha',
   pinWorkspace: 'Fijar abierto',
   unpinWorkspace: 'Dejar de fijar',
+  switchApp: 'Intercambiar posiciones',
   calculator: 'Calculadora',
   paint: 'Lienzo',
   game: 'Minijuego',

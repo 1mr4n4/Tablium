@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Calculator, Check, Eraser, Gamepad2, NotebookPen, Paintbrush, Pin, PinOff, PanelLeftOpen, PanelRightOpen, RotateCcw, X, ChevronDown } from 'lucide-react';
+import { Calculator, Check, Eraser, Gamepad2, NotebookPen, Paintbrush, Pin, PinOff, PanelLeftOpen, PanelRightOpen, RotateCcw, X, ChevronDown, Repeat2 } from 'lucide-react';
 import { AnimatePresence, motion, PanInfo } from 'framer-motion';
 import { useLang } from '../i18n';
 
@@ -23,9 +23,11 @@ export type WorkspaceSide = 'left' | 'right';
 interface WorkspaceToolsProps {
   tool: ToolId;
   stackIndex?: number;
+  showSwitch?: boolean;
   side: WorkspaceSide;
   pinned: boolean;
   onClose: () => void;
+  onSwitch: () => void;
   onSideChange: (side: WorkspaceSide) => void;
   onPinChange: (pinned: boolean) => void;
 }
@@ -50,7 +52,7 @@ export function WorkspaceLauncher({ onOpen }: { onOpen: (tool: ToolId) => void }
   );
 }
 
-export default function WorkspaceTools({ tool, stackIndex = 0, side, pinned, onClose, onSideChange, onPinChange }: WorkspaceToolsProps) {
+export default function WorkspaceTools({ tool, stackIndex = 0, showSwitch = false, side, pinned, onClose, onSwitch, onSideChange, onPinChange }: WorkspaceToolsProps) {
   const { t } = useLang();
   const activeTool = tool;
   const [notes, setNotes] = useState(() => localStorage.getItem(NOTES_KEY) ?? '');
@@ -220,8 +222,8 @@ export default function WorkspaceTools({ tool, stackIndex = 0, side, pinned, onC
         if (info.offset.x < -90) onSideChange('left');
       }}
       data-workspace-window
-      style={{ marginTop: `${stackIndex * 18}px` }}
-      className={`fixed top-20 z-40 flex max-h-[min(560px,calc(100vh-6rem))] w-[min(320px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl glass-solid shadow-2xl ${side === 'left' ? 'left-3' : 'right-3'}`}
+      style={{ top: `calc(5rem + ${stackIndex} * 44vh)` }}
+      className={`fixed top-20 z-40 flex max-h-[42vh] w-[min(320px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl glass-solid shadow-2xl ${side === 'left' ? 'left-3' : 'right-3'}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/[0.08] px-4 py-3 dark:border-white/[0.08]">
         <div>
@@ -230,6 +232,7 @@ export default function WorkspaceTools({ tool, stackIndex = 0, side, pinned, onC
         <div className="flex items-center gap-1">
           <button onClick={() => onSideChange('left')} aria-label={t.openWorkspaceLeft} title={t.openWorkspaceLeft} className={`focus-ring rounded-lg p-2 ${side === 'left' ? 'bg-brand text-white dark:bg-live dark:text-ink-800' : 'text-ink-500'}`}><PanelLeftOpen size={15} /></button>
           <button onClick={() => onSideChange('right')} aria-label={t.openWorkspaceRight} title={t.openWorkspaceRight} className={`focus-ring rounded-lg p-2 ${side === 'right' ? 'bg-brand text-white dark:bg-live dark:text-ink-800' : 'text-ink-500'}`}><PanelRightOpen size={15} /></button>
+          {showSwitch && <button onClick={onSwitch} aria-label={t.switchApp} title={t.switchApp} className="focus-ring rounded-lg p-2 text-ink-500 hover:bg-ink/[0.08] dark:text-ink-400 dark:hover:bg-white/[0.08]"><Repeat2 size={15} /></button>}
           <button onClick={() => onPinChange(!pinned)} aria-label={pinned ? t.unpinWorkspace : t.pinWorkspace} title={pinned ? t.unpinWorkspace : t.pinWorkspace} className="focus-ring rounded-lg p-2 text-ink-500 hover:bg-ink/[0.08] dark:text-ink-400 dark:hover:bg-white/[0.08]">{pinned ? <Pin size={15} /> : <PinOff size={15} />}</button>
           <button onClick={onClose} aria-label={t.close} title={t.close} className="focus-ring rounded-lg p-2 text-ink-500 hover:bg-ink/[0.08] dark:text-ink-400 dark:hover:bg-white/[0.08]"><X size={16} /></button>
         </div>

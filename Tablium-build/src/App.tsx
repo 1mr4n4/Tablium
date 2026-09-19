@@ -80,6 +80,20 @@ function Dashboard() {
     updateSession(id, { day, startTime, endTime: addMinutes(startTime, duration) });
   }
 
+  function swapWorkspacePosition(tool: ToolId) {
+    setWorkspaceTools((current) => {
+      const side = workspaceSides[tool];
+      const sameSide = current.filter((item) => workspaceSides[item] === side);
+      if (sameSide.length < 2) return current;
+      const currentIndex = current.indexOf(tool);
+      const nextSideTool = sameSide[(sameSide.indexOf(tool) + 1) % sameSide.length];
+      const nextIndex = current.indexOf(nextSideTool);
+      const next = [...current];
+      [next[currentIndex], next[nextIndex]] = [next[nextIndex], next[currentIndex]];
+      return next;
+    });
+  }
+
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -147,9 +161,11 @@ function Dashboard() {
             key={tool}
             tool={tool}
             stackIndex={workspaceTools.filter((item) => workspaceSides[item] === workspaceSides[tool]).indexOf(tool)}
+            showSwitch={workspaceTools.filter((item) => workspaceSides[item] === workspaceSides[tool]).length > 1}
             side={workspaceSides[tool]}
             pinned={workspacePinned}
             onClose={() => setWorkspaceTools((current) => current.filter((item) => item !== tool))}
+            onSwitch={() => swapWorkspacePosition(tool)}
             onSideChange={(side) => setWorkspaceSides((current) => ({ ...current, [tool]: side }))}
             onPinChange={setWorkspacePinned}
           />
