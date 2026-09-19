@@ -2,6 +2,10 @@
 
 Tablium is a responsive timetable workspace for students and teams. Build a schedule from scratch, adjust every period and break, move sessions visually, and keep related tools close without cluttering the calendar.
 
+## Open Tablium
+
+For everyday use, open the hosted app at [https://1mr4n4.github.io/Tablium/](https://1mr4n4.github.io/Tablium/). No Node.js, npm, terminal, or local server is required for users. Open the link once, then install it from the browser as an app or add it to the phone home screen.
+
 ## Highlights
 
 - Desktop weekly grid with drag-and-drop session movement.
@@ -20,7 +24,7 @@ Tablium is a responsive timetable workspace for students and teams. Build a sche
 
 ## Installation From Scratch
 
-Tablium is a web application. You do not need a database, account, or separate backend.
+Tablium is a web application. You do not need a database, account, Node.js, npm, or separate backend to use the hosted app.
 
 ### 1. Install Node.js and npm
 
@@ -82,6 +86,14 @@ npm run dev
 
 Open the `Local` URL printed by Vite, usually `http://localhost:5173`. Keep the terminal running while developing. Press `Ctrl+C` to stop the server.
 
+To test the app from a phone connected to the same Wi-Fi network, start Vite with a network host:
+
+```bash
+npm run dev -- --host 0.0.0.0
+```
+
+Open the `Network` URL printed by Vite on the phone.
+
 ### 5. Build and preview the production app
 
 ```bash
@@ -110,6 +122,34 @@ npm install
 ```
 
 If `npm run dev` says `vite` is not recognized, `npm install` did not finish successfully. Resolve the first `npm` error, run `npm install` again, and then retry the dev command.
+
+## Mobile And Desktop Installation
+
+Tablium is distributed as a responsive PWA, so users do not need an APK or an EXE to use the application. The repository automatically deploys the production build to GitHub Pages whenever `main` changes. Open the hosted URL above in a supported browser and install it from the browser menu.
+
+### Android
+
+1. Open the deployed HTTPS Tablium URL in Chrome.
+2. Open the browser menu.
+3. Choose **Install app** or **Add to Home screen**.
+4. Launch Tablium from the new home-screen icon.
+
+### iPhone and iPad
+
+1. Open the deployed HTTPS Tablium URL in Safari.
+2. Tap **Share**.
+3. Choose **Add to Home Screen**.
+4. Open Tablium from the home screen for the standalone app experience.
+
+iOS does not use Android APK files. The PWA is the recommended mobile format for this release and keeps the same timetable data in that browser profile.
+
+### Windows, macOS, and Linux
+
+Open the deployed URL in Chrome or Edge and use the install icon in the address bar, or choose **Install Tablium** from the browser menu. The installed PWA opens in its own window and does not require Node.js.
+
+### APK and EXE plans
+
+An APK or desktop EXE is not included in v1.0.0. A native wrapper can be added later with Capacitor for Android/iOS or Tauri for Windows/macOS/Linux, but it would require platform signing, packaging workflows, update delivery, and additional testing. The PWA avoids that overhead while already supporting mobile, desktop, offline caching, and installation.
 
 ## Data And Privacy
 
