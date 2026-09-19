@@ -3,3 +3,6 @@
 !.vscode/settings.json
 !.vscode/extensions.json
 .autogit/logs/
+Tablium-build/*.tsbuildinfo
+Tablium-build/vite.config.js
+Tablium-build/vite.config.d.ts

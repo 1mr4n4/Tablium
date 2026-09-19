@@ -223,7 +223,7 @@ export default function WorkspaceTools({ tool, stackIndex = 0, showSwitch = fals
       }}
       data-workspace-window
       style={{ top: `calc(5rem + ${stackIndex} * 44vh)` }}
-      className={`fixed top-20 z-40 flex max-h-[42vh] w-[min(320px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl glass-solid shadow-2xl ${side === 'left' ? 'left-3' : 'right-3'}`}
+      className={`workspace-window safe-top fixed top-20 z-40 flex max-h-[42vh] w-[min(320px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl glass-solid shadow-2xl ${side === 'left' ? 'left-3' : 'right-3'}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/[0.08] px-4 py-3 dark:border-white/[0.08]">
         <div>
@@ -237,7 +237,7 @@ export default function WorkspaceTools({ tool, stackIndex = 0, showSwitch = fals
           <button onClick={onClose} aria-label={t.close} title={t.close} className="focus-ring rounded-lg p-2 text-ink-500 hover:bg-ink/[0.08] dark:text-ink-400 dark:hover:bg-white/[0.08]"><X size={16} /></button>
         </div>
       </div>
-      <motion.div key={activeTool} initial={{ opacity: 0, y: 8, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="overflow-y-auto p-3">
+      <motion.div key={activeTool} initial={{ opacity: 0, y: 8, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="safe-bottom min-h-0 overflow-y-auto p-3">
         {activeTool === 'calculator' && (
           <div className="mx-auto max-w-sm">
             <div className="rounded-xl bg-ink-800 p-4 text-right text-paper">
@@ -283,7 +283,7 @@ export default function WorkspaceTools({ tool, stackIndex = 0, showSwitch = fals
         {activeTool === 'game' && (
           <div className="mx-auto flex max-w-sm flex-col items-center">
             <div className="grid grid-cols-3 gap-2">
-              {board.map((mark, index) => <button key={index} onClick={() => playSquare(index)} className="focus-ring flex h-16 w-16 items-center justify-center rounded-xl glass text-2xl font-semibold text-brand transition-transform hover:scale-105 dark:text-live">{mark}</button>)}
+              {board.map((mark, index) => <button key={index} onClick={() => playSquare(index)} className="focus-ring flex aspect-square w-[clamp(3.5rem,18vw,4rem)] items-center justify-center rounded-xl glass text-2xl font-semibold text-brand transition-transform hover:scale-105 dark:text-live">{mark}</button>)}
             </div>
             <p className="mt-3 min-h-5 text-sm text-ink-600 dark:text-ink-400">{gameMessage || t.gameHint}</p>
             <button onClick={resetGame} className="focus-ring mt-2 flex items-center gap-1 rounded-lg glass px-3 py-2 text-xs"><RotateCcw size={14} /> {t.newGame}</button>

@@ -14,12 +14,16 @@
 @layer base {
   html {
     -webkit-tap-highlight-color: transparent;
+    min-width: 320px;
+    background: var(--theme-paper);
   }
   body {
     @apply bg-paper text-ink-800 dark:bg-ink dark:text-paper font-sans antialiased;
     background-color: var(--theme-paper) !important;
     color: var(--theme-ink) !important;
     overscroll-behavior-y: none;
+    min-width: 320px;
+    min-height: 100dvh;
   }
   ::selection {
     @apply bg-brand/20 dark:bg-live/30;
@@ -49,6 +53,14 @@
   .focus-ring {
     @apply outline-none focus-visible:ring-2 focus-visible:ring-brand dark:focus-visible:ring-live focus-visible:ring-offset-2 focus-visible:ring-offset-paper dark:focus-visible:ring-offset-ink;
   }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 @layer utilities {
@@ -63,5 +75,14 @@
   }
   .text-live {
     color: var(--theme-accent) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .workspace-window {
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    width: auto !important;
+    max-width: none !important;
   }
 }
