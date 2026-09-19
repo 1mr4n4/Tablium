@@ -11,9 +11,10 @@ import SettingsPanel from './components/SettingsPanel';
 import LiveIndicator from './components/LiveIndicator';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import WorkspaceTools, { ToolId, WorkspaceLauncher, WorkspaceSide } from './components/WorkspaceTools';
+import { playUiSound, UiSound } from './sound';
 
 function Dashboard() {
-  const { config, visibleSessions, groups, stickers, backgroundText, updateSticker, updateSession, addSession, deleteSession, duplicateSession } =
+  const { config, visibleSessions, groups, stickers, backgroundText, soundEnabled, updateSticker, updateSession, addSession, deleteSession, duplicateSession } =
     useStore();
   const { t } = useLang();
 
@@ -95,7 +96,11 @@ function Dashboard() {
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen" onClickCapture={(event) => {
+      const button = (event.target as HTMLElement).closest('button');
+      if (!button) return;
+      playUiSound((button.dataset.sound as UiSound | undefined) ?? 'click', soundEnabled);
+    }}>
       {stickers.map((sticker, index) => <motion.div key={sticker.id} drag dragMomentum={false} dragElastic={0.12} onDragEnd={(_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => updateSticker(sticker.id, { x: Math.max(2, Math.min(94, (info.point.x / window.innerWidth) * 100)), y: Math.max(8, Math.min(92, (info.point.y / window.innerHeight) * 100)) })} animate={{ rotate: sticker.rotation, scale: sticker.scale, y: [0, -4, 0] }} transition={{ y: { duration: 2.4 + (index % 3) * 0.5, repeat: Infinity, ease: 'easeInOut' } }} className="fixed z-20 cursor-grab select-none active:cursor-grabbing" style={{ left: `${sticker.x}%`, top: `${sticker.y}%` }}>{sticker.content.startsWith('data:image/') ? <img src={sticker.content} alt="" className="h-12 w-12 object-contain drop-shadow-lg" draggable={false} /> : <span className="text-2xl drop-shadow-lg">{sticker.content}</span>}</motion.div>)}
       {backgroundText && <div className="pointer-events-none fixed bottom-8 left-1/2 z-10 max-w-[80vw] -translate-x-1/2 rotate-[-2deg] rounded-xl bg-white/75 px-4 py-2 text-center font-display text-lg italic text-ink-800 shadow-lg backdrop-blur-sm">{backgroundText}</div>}
       {/* Header */}
@@ -103,7 +108,7 @@ function Dashboard() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
           <div className="flex items-center gap-2">
             <h1 className="font-display text-xl italic text-ink-800 dark:text-paper">Tablium</h1>
-            <WorkspaceLauncher onOpen={(tool) => setWorkspaceTools((current) => current.includes(tool) ? current : [...current, tool])} />
+            <WorkspaceLauncher onOpen={(tool) => { playUiSound('pop', soundEnabled); setWorkspaceTools((current) => current.includes(tool) ? current : [...current, tool]); }} />
           </div>
 
           <div className="order-3 w-full sm:order-2 sm:w-auto sm:flex-1 sm:flex sm:justify-center">

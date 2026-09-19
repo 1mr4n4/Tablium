@@ -13,6 +13,7 @@ const MAX_BACKUPS = 5;
 const BACKGROUND_KEY = 'tablium.background.v1';
 const STICKERS_KEY = 'tablium.stickers.v1';
 const BACKGROUND_TEXT_KEY = 'tablium.background-text.v1';
+const SOUND_KEY = 'tablium.sound.v1';
 
 function loadTimetable(): TimetableConfig {
   try {
@@ -54,6 +55,13 @@ function loadString(key: string, fallback = ''): string {
   try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
 }
 
+function loadBoolean(key: string, fallback: boolean): boolean {
+  try {
+    const stored = localStorage.getItem(key);
+    return stored === null ? fallback : stored === 'true';
+  } catch { return fallback; }
+}
+
 function loadStickers(): Sticker[] {
   try {
     const saved = JSON.parse(localStorage.getItem(STICKERS_KEY) ?? '[]');
@@ -82,6 +90,7 @@ interface StoreValue {
   backgroundImage: string;
   stickers: Sticker[];
   backgroundText: string;
+  soundEnabled: boolean;
   visibleSessions: ClassSession[];
   groups: string[];
   setActiveGroup: (group: string | undefined) => void;
@@ -104,6 +113,7 @@ interface StoreValue {
   updateSticker: (id: string, patch: Partial<Sticker>) => void;
   addGroup: (group: string) => void;
   setBackgroundText: (text: string) => void;
+  setSoundEnabled: (enabled: boolean) => void;
   exportJSON: () => string;
   importJSON: (json: string) => { ok: boolean; error?: string };
   resetTimetable: () => void;
@@ -120,6 +130,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [backgroundImage, setBackgroundImageState] = useState(() => loadString(BACKGROUND_KEY));
   const [stickers, setStickersState] = useState<Sticker[]>(loadStickers);
   const [backgroundText, setBackgroundTextState] = useState(() => loadString(BACKGROUND_TEXT_KEY));
+  const [soundEnabled, setSoundEnabledState] = useState(() => loadBoolean(SOUND_KEY, true));
 
   useEffect(() => {
     try {
@@ -161,6 +172,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => { localStorage.setItem(STICKERS_KEY, JSON.stringify(stickers)); }, [stickers]);
   useEffect(() => { localStorage.setItem(BACKGROUND_TEXT_KEY, backgroundText); }, [backgroundText]);
+  useEffect(() => { localStorage.setItem(SOUND_KEY, String(soundEnabled)); }, [soundEnabled]);
 
   const groups = useMemo(() => {
     const set = new Set<string>(config.groups ?? []);
@@ -294,6 +306,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setStickersState((current) => current.map((sticker) => sticker.id === id ? { ...sticker, ...patch } : sticker));
   }, []);
   const setBackgroundText = useCallback((text: string) => setBackgroundTextState(text.slice(0, 120)), []);
+  const setSoundEnabled = useCallback((enabled: boolean) => setSoundEnabledState(enabled), []);
 
   const exportJSON = useCallback(() => JSON.stringify(config, null, 2), [config]);
 
@@ -328,6 +341,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     backgroundImage,
     stickers,
     backgroundText,
+    soundEnabled,
     visibleSessions,
     groups,
     setActiveGroup,
@@ -350,6 +364,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setStickers,
     updateSticker,
     setBackgroundText,
+    setSoundEnabled,
     exportJSON,
     importJSON,
     resetTimetable,

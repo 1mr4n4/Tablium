@@ -133,6 +133,9 @@ type TranslationKeys = {
   backgroundTextPlaceholder: string;
   customSticker: string;
   removeSticker: string;
+  soundEffects: string;
+  soundEffectsOn: string;
+  soundEffectsOff: string;
   apiKeyRequired: string;
   visionResponseError: (provider: string, status: number) => string;
   visionInvalidResponse: string;
@@ -292,6 +295,9 @@ const en: TranslationKeys = {
   backgroundTextPlaceholder: 'e.g. This week, I have this!',
   customSticker: 'Add your own sticker',
   removeSticker: 'Remove sticker',
+  soundEffects: 'Sound effects',
+  soundEffectsOn: 'On',
+  soundEffectsOff: 'Off',
   apiKeyRequired: 'Add an API key in Settings before importing an image.',
   visionResponseError: (provider: string, status: number) => `${provider} returned an error (${status}).`,
   visionInvalidResponse: 'The vision provider returned an unreadable response.',
@@ -443,6 +449,9 @@ const fr: TranslationKeys = {
   backgroundTextPlaceholder: 'ex. Cette semaine, je gère !',
   customSticker: 'Ajouter votre autocollant',
   removeSticker: 'Supprimer l’autocollant',
+  soundEffects: 'Effets sonores',
+  soundEffectsOn: 'Activés',
+  soundEffectsOff: 'Désactivés',
   apiKeyRequired: 'Ajoutez une clé API dans les paramètres avant d’importer une image.',
   visionResponseError: (provider: string, status: number) => `${provider} a renvoyé une erreur (${status}).`,
   visionInvalidResponse: 'Le fournisseur de vision a renvoyé une réponse illisible.',
@@ -594,6 +603,9 @@ const de: TranslationKeys = {
   backgroundTextPlaceholder: 'z. B. Diese Woche schaffe ich das!',
   customSticker: 'Eigenen Sticker hinzufügen',
   removeSticker: 'Sticker entfernen',
+  soundEffects: 'Soundeffekte',
+  soundEffectsOn: 'Ein',
+  soundEffectsOff: 'Aus',
   apiKeyRequired: 'Füge in den Einstellungen einen API-Schlüssel hinzu, bevor du ein Bild importierst.',
   visionResponseError: (provider: string, status: number) => `${provider} hat einen Fehler zurückgegeben (${status}).`,
   visionInvalidResponse: 'Der Vision-Anbieter hat eine unlesbare Antwort zurückgegeben.',
@@ -745,6 +757,9 @@ const es: TranslationKeys = {
   backgroundTextPlaceholder: 'ej. ¡Esta semana puedo!',
   customSticker: 'Añadir pegatina propia',
   removeSticker: 'Quitar pegatina',
+  soundEffects: 'Efectos de sonido',
+  soundEffectsOn: 'Activados',
+  soundEffectsOff: 'Desactivados',
   apiKeyRequired: 'Añade una clave API en Ajustes antes de importar una imagen.',
   visionResponseError: (provider: string, status: number) => `${provider} devolvió un error (${status}).`,
   visionInvalidResponse: 'El proveedor de visión devolvió una respuesta ilegible.',

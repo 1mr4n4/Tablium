@@ -28,6 +28,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     backgroundImage,
     stickers,
     backgroundText,
+    soundEnabled,
     groups,
     setActiveGroup,
     setTimeRange,
@@ -44,6 +45,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     setBackgroundImage,
     setStickers,
     setBackgroundText,
+    setSoundEnabled,
     exportJSON,
     importJSON,
     replaceSessions,
@@ -194,6 +196,13 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
         {/* Appearance */}
         <section>
           <h3 className={sectionTitle}>{t.appearance}</h3>
+          <button
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className="focus-ring mb-2 flex w-full items-center justify-between rounded-lg glass px-3 py-2.5 text-sm"
+          >
+            <span className="text-ink-800 dark:text-paper">{t.soundEffects}</span>
+            <span className="text-xs text-ink-500">{soundEnabled ? t.soundEffectsOn : t.soundEffectsOff}</span>
+          </button>
           <button
             onClick={toggleTheme}
             className="focus-ring flex w-full items-center justify-between rounded-lg glass px-3 py-2.5 text-sm"

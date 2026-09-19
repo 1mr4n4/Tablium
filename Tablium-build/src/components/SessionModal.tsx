@@ -121,6 +121,7 @@ export default function SessionModal({
           <div className="flex items-center gap-1.5">
             {!isCreate && onDelete && (
               <button
+                data-sound="delete"
                 onClick={() => {
                   onDelete(draft.id);
                   onClose();
@@ -133,6 +134,7 @@ export default function SessionModal({
             )}
             {!isCreate && onDuplicate && (
               <button
+                data-sound="success"
                 onClick={() => {
                   onDuplicate(draft.id);
                   onClose();
@@ -145,6 +147,7 @@ export default function SessionModal({
             )}
           </div>
           <button
+            data-sound="success"
             onClick={handleSave}
             disabled={!draft.subject.trim()}
             className="focus-ring rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40 dark:bg-live dark:text-ink-800"
@@ -341,6 +344,7 @@ export default function SessionModal({
                   {task.text}
                 </span>
                 <button
+                  data-sound="delete"
                   onClick={() => removeTask(task.id)}
                   aria-label={t.deleteTask}
                   className="focus-ring rounded p-0.5 text-ink-400 hover:text-session-examen"
@@ -359,6 +363,7 @@ export default function SessionModal({
               onKeyDown={(e) => e.key === 'Enter' && addTask()}
             />
             <button
+              data-sound="success"
               onClick={addTask}
               aria-label={t.addTask}
               className="focus-ring shrink-0 rounded-lg bg-ink/[0.06] px-2.5 text-ink-800 hover:bg-ink/10 dark:bg-white/[0.08] dark:text-paper dark:hover:bg-white/[0.14]"
