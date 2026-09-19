@@ -1,11 +1,12 @@
 import React, { useRef, useState } from 'react';
-import { Sun, Moon, ImageUp, Download, Upload, CalendarDays, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Sun, Moon, ImageUp, Download, Upload, CalendarDays, Loader2, AlertCircle, CheckCircle2, Clock3, RotateCcw, History } from 'lucide-react';
 import Panel from './Panel';
 import { useStore } from '../store';
 import { useLang } from '../i18n';
 import { parseTimetableImage } from '../visionApi';
 import { downloadFile, exportToICS } from '../utils';
-import { VisionProvider } from '../types';
+import { ThemeId, TimeSlot, VisionProvider } from '../types';
+import { ThemePalette } from '../themes';
 
 interface SettingsPanelProps {
   open: boolean;
@@ -22,10 +23,19 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const {
     config,
     theme,
+    customTheme,
     vision,
     groups,
     setActiveGroup,
+    setTimeRange,
+    setTimeSlots,
+    setShowSaturday,
+    setCompactGrid,
     toggleTheme,
+    setTheme,
+    setCustomTheme,
+    resetTimetable,
+    restoreBackup,
     setVision,
     exportJSON,
     importJSON,
@@ -83,9 +93,47 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     downloadFile('tablium.ics', exportToICS(config), 'text/calendar');
   }
 
+  function handleReset() {
+    if (!window.confirm(t.resetConfirm)) return;
+    resetTimetable();
+    setImportMsg({ type: 'ok', text: t.startFreshDescription });
+  }
+
+  function handleRestore() {
+    setImportMsg(
+      restoreBackup()
+        ? { type: 'ok', text: t.restoreBackup }
+        : { type: 'error', text: t.noBackup }
+    );
+  }
+
   const sectionTitle = 'mb-2 text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400';
   const inputClasses =
     'w-full rounded-lg border border-ink/[0.1] dark:border-white/[0.1] bg-transparent px-3 py-2 text-sm text-ink-800 dark:text-paper placeholder:text-ink-400 focus-ring';
+  const startTime = config.timeSlots[0]?.startTime ?? '08:30';
+  const endTime = config.timeSlots[config.timeSlots.length - 1]?.endTime ?? '18:00';
+  const timeOptions = ['07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00'];
+  const endOptions = ['16:30', '17:00', '17:30', '17:45', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
+  const themeOptions: { id: ThemeId; label: string; swatch: string }[] = [
+    { id: 'light', label: t.themeLight, swatch: '#F7F7F5' },
+    { id: 'dark', label: t.themeDark, swatch: '#0F1115' },
+    { id: 'ocean', label: t.themeOcean, swatch: '#167D8D' },
+    { id: 'forest', label: t.themeForest, swatch: '#3D7654' },
+    { id: 'sunset', label: t.themeSunset, swatch: '#B9513D' },
+    { id: 'rose', label: t.themeRose, swatch: '#A64D72' },
+    { id: 'slate', label: t.themeSlate, swatch: '#7BA6B8' },
+    { id: 'custom', label: t.themeCustom, swatch: customTheme.brand },
+  ];
+
+  function updateSlot(index: number, field: keyof TimeSlot, value: string) {
+    setTimeSlots(config.timeSlots.map((slot, slotIndex) =>
+      slotIndex === index ? { ...slot, [field]: value } : slot
+    ));
+  }
+
+  function updateCustomColor(field: keyof Pick<ThemePalette, 'paper' | 'ink' | 'brand' | 'accent'>, value: string) {
+    setCustomTheme({ ...customTheme, [field]: value });
+  }
 
   return (
     <Panel open={open} onClose={onClose} title={t.title}>
@@ -103,6 +151,47 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
             </span>
             <span className="text-xs text-ink-500">{t.change}</span>
           </button>
+        </section>
+
+        {/* Themes */}
+        <section>
+          <h3 className={sectionTitle}>{t.themes}</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {themeOptions.map((option) => (
+              <button
+                key={option.id}
+                onClick={() => setTheme(option.id)}
+                className={`focus-ring flex items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium transition-transform hover:-translate-y-0.5 ${
+                  theme === option.id ? 'ring-2 ring-brand dark:ring-live' : 'glass'
+                }`}
+                style={theme === option.id ? { backgroundColor: `${option.swatch}22` } : undefined}
+              >
+                <span className="h-4 w-4 shrink-0 rounded-full border border-black/10" style={{ backgroundColor: option.swatch }} />
+                <span className="text-ink-800 dark:text-paper">{option.label}</span>
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-ink-500 dark:text-ink-400">{t.customThemeDescription}</p>
+          {theme === 'custom' && (
+            <div className="mt-2 grid grid-cols-2 gap-2 rounded-lg glass p-3">
+              {([
+                ['paper', t.paperColor],
+                ['ink', t.inkColor],
+                ['brand', t.brandColor],
+                ['accent', t.accentColor],
+              ] as const).map(([field, label]) => (
+                <label key={field} className="flex items-center justify-between gap-2 text-xs text-ink-600 dark:text-ink-400">
+                  {label}
+                  <input
+                    type="color"
+                    value={customTheme[field]}
+                    onChange={(e) => updateCustomColor(field, e.target.value)}
+                    className="h-7 w-9 cursor-pointer rounded border-0 bg-transparent p-0"
+                  />
+                </label>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Group filter */}
@@ -135,6 +224,85 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                 {g}
               </button>
             ))}
+          </div>
+        </section>
+
+        {/* Timetable range */}
+        <section>
+          <h3 className={sectionTitle}>{t.scheduleRange}</h3>
+          <p className="mb-2 text-xs text-ink-500 dark:text-ink-400">{t.scheduleRangeDescription}</p>
+          <div className="grid grid-cols-2 gap-2">
+            <label className="text-xs text-ink-500 dark:text-ink-400">
+              {t.startTime}
+              <select
+                className={`${inputClasses} mt-1`}
+                value={startTime}
+                onChange={(e) => setTimeRange(e.target.value, endTime)}
+              >
+                {timeOptions.map((time) => <option key={time} value={time}>{time.replace(':', 'h')}</option>)}
+              </select>
+            </label>
+            <label className="text-xs text-ink-500 dark:text-ink-400">
+              {t.endTime}
+              <select
+                className={`${inputClasses} mt-1`}
+                value={endTime}
+                onChange={(e) => setTimeRange(startTime, e.target.value)}
+              >
+                {endOptions.map((time) => <option key={time} value={time}>{time.replace(':', 'h')}</option>)}
+              </select>
+            </label>
+          </div>
+          <div className="mt-2 flex items-center gap-2 text-xs text-ink-500 dark:text-ink-400">
+            <Clock3 size={14} />
+            {startTime.replace(':', 'h')} – {endTime.replace(':', 'h')}
+          </div>
+        </section>
+
+        {/* Individual periods */}
+        <section>
+          <h3 className={sectionTitle}>{t.schedulePeriods}</h3>
+          <div className="space-y-2">
+            {config.timeSlots.map((slot, index) => (
+              <div key={`${slot.startTime}-${index}`} className="grid grid-cols-[1fr_auto_1fr] items-end gap-2 rounded-lg glass px-3 py-2">
+                <label className="text-[11px] text-ink-500 dark:text-ink-400">
+                  {t.startTime}
+                  <input
+                    type="time"
+                    step="900"
+                    value={slot.startTime}
+                    onChange={(e) => updateSlot(index, 'startTime', e.target.value)}
+                    className={`${inputClasses} mt-1 px-2`}
+                  />
+                </label>
+                <span className="pb-2 text-xs text-ink-400">→</span>
+                <label className="text-[11px] text-ink-500 dark:text-ink-400">
+                  {t.endTime}
+                  <input
+                    type="time"
+                    step="900"
+                    value={slot.endTime}
+                    onChange={(e) => updateSlot(index, 'endTime', e.target.value)}
+                    className={`${inputClasses} mt-1 px-2`}
+                  />
+                </label>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Display options */}
+        <section>
+          <h3 className={sectionTitle}>{t.displayOptions}</h3>
+          <div className="space-y-2">
+            <label className="flex cursor-pointer items-center justify-between rounded-lg glass px-3 py-2.5 text-sm text-ink-800 dark:text-paper">
+              {t.showSaturday}
+              <input type="checkbox" checked={config.showSaturday !== false} onChange={(e) => setShowSaturday(e.target.checked)} className="accent-brand" />
+            </label>
+            <label className="flex cursor-pointer items-center justify-between rounded-lg glass px-3 py-2.5 text-sm text-ink-800 dark:text-paper">
+              {t.compactGrid}
+              <input type="checkbox" checked={config.compactGrid === true} onChange={(e) => setCompactGrid(e.target.checked)} className="accent-brand" />
+            </label>
           </div>
         </section>
 
@@ -201,6 +369,21 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
         {/* Data */}
         <section>
           <h3 className={sectionTitle}>{t.data}</h3>
+          <div className="mb-2 space-y-2">
+            <button
+              onClick={handleReset}
+              className="focus-ring flex w-full items-start gap-2 rounded-lg border border-session-examen/20 bg-session-examen/[0.06] px-3 py-2.5 text-left text-xs text-session-examen dark:text-session-examenDark"
+            >
+              <RotateCcw size={15} className="mt-0.5 shrink-0" />
+              <span><strong className="font-semibold">{t.startFresh}</strong><br />{t.startFreshDescription}</span>
+            </button>
+            <button
+              onClick={handleRestore}
+              className="focus-ring flex w-full items-center gap-2 rounded-lg glass px-3 py-2.5 text-left text-xs font-medium text-ink-800 dark:text-paper"
+            >
+              <History size={15} /> {t.restoreBackup}
+            </button>
+          </div>
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={handleExportJSON}

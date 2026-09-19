@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowDownToLine, Plus } from 'lucide-react';
 import { ClassSession, DAYS, Day, TimeSlot, TimetableConfig } from '../types';
 import { useLang } from '../i18n';
 import { timeToMinutes } from '../utils';
@@ -42,6 +43,7 @@ const DAY_KEY: Record<Day, string> = {
 export default function DesktopGrid({ config, sessions, onSessionClick, onEmptySlotClick, onMoveSession }: DesktopGridProps) {
   const { t } = useLang();
   const [now, setNow] = useState(new Date());
+  const [dragTarget, setDragTarget] = useState<string | null>(null);
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(id);
@@ -65,12 +67,19 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
   const cols = timeSlots.length;
 
   const visibleDays = config.showSaturday === false ? DAYS.filter((day) => day !== 'Samedi') : DAYS;
+  const gridStyle = {
+    gridTemplateColumns: `100px repeat(${cols}, minmax(180px, 1fr))`,
+    minWidth: `${100 + cols * 180}px`,
+  };
 
   return (
     <div className="glass overflow-x-auto rounded-2xl">
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
         className="grid border-b border-ink/[0.08] dark:border-white/[0.08]"
-        style={{ gridTemplateColumns: `100px repeat(${cols}, 1fr)` }}
+        style={gridStyle}
       >
         <div className="px-3 py-3 text-[11px] font-medium text-ink-400 dark:text-ink-400 border-r border-ink/[0.06] dark:border-white/[0.06]">
           <span className="italic">{t.schedules}</span>
@@ -92,16 +101,19 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
             </div>
           );
         })}
-      </div>
+      </motion.div>
 
-      {visibleDays.map((day) => {
+      {visibleDays.map((day, dayIndex) => {
         const isToday = day === todayName;
         const dayLabel = t[DAY_KEY[day] as keyof typeof t] as string;
         return (
-          <div
+          <motion.div
             key={day}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: dayIndex * 0.045 }}
             className="grid border-b border-ink/[0.06] dark:border-white/[0.06] last:border-b-0"
-            style={{ gridTemplateColumns: `100px repeat(${cols}, 1fr)` }}
+            style={gridStyle}
           >
             <div
               className={`px-3 py-3 flex items-start justify-center text-xs font-bold uppercase tracking-wide border-r border-ink/[0.06] dark:border-white/[0.06] ${
@@ -123,9 +135,13 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
                     current ? 'bg-brand/[0.03] dark:bg-live/[0.04]' : ''
                   }`}
                   onDoubleClick={() => onEmptySlotClick(day, slot.startTime)}
-                  onDragOver={(e) => e.preventDefault()}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragTarget(`${day}-${si}`);
+                  }}
                   onDrop={(e) => {
                     e.preventDefault();
+                    setDragTarget(null);
                     const id = e.dataTransfer.getData('text/session-id');
                     if (!id) return;
                     onMoveSession(id, day, slot.startTime);
@@ -148,7 +164,10 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
                           compact
                           onClick={() => onSessionClick(session)}
                           draggable
-                          onDragStart={(e) => e.dataTransfer.setData('text/session-id', session.id)}
+                          onDragStart={(e) => {
+                            e.dataTransfer.effectAllowed = 'move';
+                            e.dataTransfer.setData('text/session-id', session.id);
+                          }}
                         />
                       ))}
                     </div>
@@ -159,10 +178,15 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
                       )}
                     </div>
                   )}
+                  {dragTarget === `${day}-${si}` && (
+                    <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-brand/[0.08] dark:bg-live/[0.1]">
+                      <ArrowDownToLine size={20} className="animate-bounce text-brand dark:text-live" />
+                    </div>
+                  )}
                 </div>
               );
             })}
-          </div>
+          </motion.div>
         );
       })}
     </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { Settings, Users } from 'lucide-react';
 import { StoreProvider, useStore } from './store';
 import { ClassSession, Day } from './types';
@@ -9,6 +10,7 @@ import SessionModal from './components/SessionModal';
 import SettingsPanel from './components/SettingsPanel';
 import LiveIndicator from './components/LiveIndicator';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import WorkspaceTools, { ToolId, WorkspaceLauncher, WorkspaceSide } from './components/WorkspaceTools';
 
 function Dashboard() {
   const { config, visibleSessions, groups, updateSession, addSession, deleteSession, duplicateSession } =
@@ -20,6 +22,25 @@ function Dashboard() {
   const [prefillTime, setPrefillTime] = useState<string | undefined>(undefined);
   const [modalOpen, setModalOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [workspaceTools, setWorkspaceTools] = useState<ToolId[]>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('tablium.workspace-open.v1') ?? '[]');
+      return Array.isArray(saved) ? saved : [];
+    } catch {
+      return [];
+    }
+  });
+  const [workspaceSide, setWorkspaceSide] = useState<WorkspaceSide>(() => {
+    const saved = localStorage.getItem('tablium.workspace-side.v1');
+    return saved === 'left' ? 'left' : 'right';
+  });
+  const [workspacePinned, setWorkspacePinned] = useState(() => localStorage.getItem('tablium.workspace-pinned.v1') === 'true');
+
+  React.useEffect(() => {
+    localStorage.setItem('tablium.workspace-side.v1', workspaceSide);
+    localStorage.setItem('tablium.workspace-pinned.v1', String(workspacePinned));
+    localStorage.setItem('tablium.workspace-open.v1', JSON.stringify(workspacePinned ? workspaceTools : []));
+  }, [workspaceSide, workspacePinned, workspaceTools]);
 
   function openSession(session: ClassSession) {
     setSelected(session);
@@ -55,7 +76,10 @@ function Dashboard() {
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-ink/[0.08] bg-paper/85 backdrop-blur-md dark:border-white/[0.08] dark:bg-ink/85">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
-          <h1 className="font-display text-xl italic text-ink-800 dark:text-paper">Tablium</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="font-display text-xl italic text-ink-800 dark:text-paper">Tablium</h1>
+            <WorkspaceLauncher onOpen={(tool) => setWorkspaceTools((current) => current.includes(tool) ? current : [...current, tool])} />
+          </div>
 
           <div className="order-3 w-full sm:order-2 sm:w-auto sm:flex-1 sm:flex sm:justify-center">
             <LiveIndicator sessions={visibleSessions} onClick={openSession} />
@@ -82,7 +106,9 @@ function Dashboard() {
 
       <main className="mx-auto max-w-6xl px-4 py-4">
         {visibleSessions.length === 0 ? (
-          <EmptyState onAdd={() => openCreate('Lundi')} />
+          <>
+            <EmptyState onAdd={() => openCreate('Lundi')} />
+          </>
         ) : (
           <>
             <div className="hidden md:block">
@@ -105,6 +131,21 @@ function Dashboard() {
           </>
         )}
       </main>
+
+      <AnimatePresence>
+        {workspaceTools.map((tool, stackIndex) => (
+          <WorkspaceTools
+            key={tool}
+            tool={tool}
+            stackIndex={stackIndex}
+            side={workspaceSide}
+            pinned={workspacePinned}
+            onClose={() => setWorkspaceTools((current) => current.filter((item) => item !== tool))}
+            onSideChange={setWorkspaceSide}
+            onPinChange={setWorkspacePinned}
+          />
+        ))}
+      </AnimatePresence>
 
       <SessionModal
         open={modalOpen}

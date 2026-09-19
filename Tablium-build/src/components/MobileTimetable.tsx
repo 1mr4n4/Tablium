@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion, PanInfo } from 'framer-motion';
 import { Plus, Inbox } from 'lucide-react';
 import { ClassSession, DAYS, Day } from '../types';
@@ -31,6 +31,10 @@ export default function MobileTimetable({ sessions, showSaturday = true, onSessi
 
   const visibleDays = showSaturday ? DAYS : DAYS.filter((day) => day !== 'Samedi');
   const activeIndex = visibleDays.indexOf(activeDay);
+
+  useEffect(() => {
+    if (!showSaturday && activeDay === 'Samedi') setActiveDay('Lundi');
+  }, [showSaturday, activeDay]);
 
   function goTo(index: number) {
     const clamped = Math.max(0, Math.min(visibleDays.length - 1, index));

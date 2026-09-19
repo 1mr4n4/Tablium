@@ -1,6 +1,6 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { MapPin, User, CheckCircle2, XCircle, Ban } from 'lucide-react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { MapPin, User, CheckCircle2, XCircle, Ban, ArrowUpRight } from 'lucide-react';
 import { ClassSession } from '../types';
 import { useLang } from '../i18n';
 import { SESSION_TYPE_CLASSES } from '../utils';
@@ -25,14 +25,33 @@ export default function SessionCard({ session, onClick, compact, live, draggable
   const typeClasses = SESSION_TYPE_CLASSES[session.type];
   const isCancelled = session.status === 'cancelled';
 
-  const Wrapper = draggable ? 'button' : motion.button;
-  const wrapperProps: any = draggable
-    ? { onClick, draggable: true, onDragStart }
-    : { layout: true, whileTap: { scale: 0.97 }, onClick };
+  const pointerX = useMotionValue(0);
+  const pointerY = useMotionValue(0);
+  const springX = useSpring(pointerX, { stiffness: 260, damping: 22 });
+  const springY = useSpring(pointerY, { stiffness: 260, damping: 22 });
+  const tilt = useTransform(springX, [-8, 8], [-1.5, 1.5]);
+
+  function handleMouseMove(e: React.MouseEvent<HTMLButtonElement>) {
+    const bounds = e.currentTarget.getBoundingClientRect();
+    pointerX.set(((e.clientX - bounds.left) / bounds.width - 0.5) * 8);
+    pointerY.set(((e.clientY - bounds.top) / bounds.height - 0.5) * 6);
+  }
+
+  function resetPointer() {
+    pointerX.set(0);
+    pointerY.set(0);
+  }
 
   return (
-    <Wrapper
-      {...wrapperProps}
+    <motion.button
+      layout
+      draggable={draggable}
+      onDragStartCapture={draggable ? onDragStart : undefined}
+      whileTap={{ scale: 0.97 }}
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={resetPointer}
+      style={{ x: springX, y: springY, rotate: tilt }}
       className={`focus-ring group relative w-full overflow-hidden rounded-lg text-left transition-shadow ${
         isCancelled ? 'opacity-50' : ''
       } ${compact ? 'p-2' : 'p-2.5'} glass hover:shadow-md ${live ? 'ring-1 ring-live dark:ring-live-dark' : ''}`}
@@ -83,7 +102,25 @@ export default function SessionCard({ session, onClick, compact, live, draggable
             </div>
           )}
         </div>
+        {draggable && (
+          <span
+            role="button"
+            tabIndex={0}
+            draggable
+            title={t.dragToMove}
+            aria-label={t.dragToMove}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onDragStart={(e) => {
+              e.stopPropagation();
+              onDragStart?.(e);
+            }}
+            className="focus-ring mt-0.5 shrink-0 cursor-grab rounded-md p-1 text-ink-400 opacity-0 transition-all hover:bg-ink/[0.08] hover:text-brand group-hover:opacity-100 active:cursor-grabbing dark:hover:bg-white/[0.1] dark:hover:text-live"
+          >
+            <ArrowUpRight size={14} />
+          </span>
+        )}
       </div>
-    </Wrapper>
+    </motion.button>
   );
 }

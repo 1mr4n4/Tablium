@@ -53,4 +53,5 @@ export interface VisionSettings {
   apiKey: string;
 }
 
-export type ThemeMode = 'light' | 'dark';
+export type ThemeId = 'light' | 'dark' | 'ocean' | 'forest' | 'sunset' | 'rose' | 'slate' | 'custom';
+export type ThemeMode = ThemeId;

@@ -2,12 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --theme-paper: #f7f7f5;
+  --theme-ink: #14171c;
+  --theme-surface: rgba(255, 255, 255, 0.72);
+  --theme-border: rgba(15, 17, 21, 0.1);
+  --theme-brand: #1e3a5f;
+  --theme-accent: #f2b705;
+}
+
 @layer base {
   html {
     -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-paper text-ink-800 dark:bg-ink dark:text-paper font-sans antialiased;
+    background-color: var(--theme-paper) !important;
+    color: var(--theme-ink) !important;
     overscroll-behavior-y: none;
   }
   ::selection {
@@ -28,12 +39,29 @@
 
 @layer components {
   .glass {
-    @apply bg-white/70 dark:bg-white/[0.04] backdrop-blur-md border border-ink/[0.08] dark:border-white/[0.08];
+    @apply backdrop-blur-md;
+    background-color: var(--theme-surface);
+    border-color: var(--theme-border);
   }
   .glass-solid {
     @apply bg-paper-100 dark:bg-ink-700 border border-ink/[0.08] dark:border-white/[0.08];
   }
   .focus-ring {
     @apply outline-none focus-visible:ring-2 focus-visible:ring-brand dark:focus-visible:ring-live focus-visible:ring-offset-2 focus-visible:ring-offset-paper dark:focus-visible:ring-offset-ink;
+  }
+}
+
+@layer utilities {
+  .bg-brand {
+    background-color: var(--theme-brand) !important;
+  }
+  .text-brand {
+    color: var(--theme-brand) !important;
+  }
+  .bg-live {
+    background-color: var(--theme-accent) !important;
+  }
+  .text-live {
+    color: var(--theme-accent) !important;
   }
 }

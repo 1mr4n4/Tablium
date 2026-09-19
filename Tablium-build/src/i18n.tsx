@@ -93,6 +93,34 @@ type TranslationKeys = {
   exportCalendar: string;
   importSuccess: string;
   importError: string;
+  scheduleRange: string;
+  scheduleRangeDescription: string;
+  startTime: string;
+  endTime: string;
+  displayOptions: string;
+  showSaturday: string;
+  compactGrid: string;
+  schedulePeriods: string;
+  dragToMove: string;
+  themes: string;
+  themeLight: string;
+  themeDark: string;
+  themeOcean: string;
+  themeForest: string;
+  themeSunset: string;
+  themeRose: string;
+  themeSlate: string;
+  themeCustom: string;
+  customThemeDescription: string;
+  paperColor: string;
+  inkColor: string;
+  brandColor: string;
+  accentColor: string;
+  startFresh: string;
+  startFreshDescription: string;
+  restoreBackup: string;
+  noBackup: string;
+  resetConfirm: string;
 
   // SessionCard
   liveTag: string;
@@ -114,6 +142,26 @@ type TranslationKeys = {
   daySamedi: string;
 
   // Empty state
+  workspace: string;
+  workspaceDescription: string;
+  openWorkspace: string;
+  openWorkspaceLeft: string;
+  openWorkspaceRight: string;
+  pinWorkspace: string;
+  unpinWorkspace: string;
+  calculator: string;
+  paint: string;
+  game: string;
+  calculatorError: string;
+  notesSavedLocally: string;
+  saved: string;
+  brushColor: string;
+  clear: string;
+  gameHint: string;
+  gameWon: string;
+  gameLost: string;
+  gameDraw: string;
+  newGame: string;
   emptyTitle: string;
   emptyDesc: string;
   emptyButton: string;
@@ -185,6 +233,34 @@ const en: TranslationKeys = {
   exportCalendar: 'Export to Calendar (.ics)',
   importSuccess: 'Timetable imported successfully.',
   importError: 'Import failed.',
+  scheduleRange: 'Schedule range',
+  scheduleRangeDescription: 'Choose when your timetable starts and ends. Sessions are kept unchanged.',
+  startTime: 'Starts at',
+  endTime: 'Ends at',
+  displayOptions: 'Display options',
+  showSaturday: 'Show Saturday',
+  compactGrid: 'Compact desktop rows',
+  schedulePeriods: 'Periods and breaks',
+  dragToMove: 'Drag the arrow to move',
+  themes: 'Themes',
+  themeLight: 'Paper',
+  themeDark: 'Midnight',
+  themeOcean: 'Ocean',
+  themeForest: 'Forest',
+  themeSunset: 'Sunset',
+  themeRose: 'Rose',
+  themeSlate: 'Slate',
+  themeCustom: 'Custom',
+  customThemeDescription: 'Build your own palette. Changes apply instantly.',
+  paperColor: 'Background',
+  inkColor: 'Text',
+  brandColor: 'Brand',
+  accentColor: 'Accent',
+  startFresh: 'Start from scratch',
+  startFreshDescription: 'Save a backup, then remove all sessions and groups.',
+  restoreBackup: 'Restore latest backup',
+  noBackup: 'No backup is available yet.',
+  resetConfirm: 'Start over? Your current timetable will be backed up first.',
   liveTag: 'live',
   cancelledTag: 'cancelled',
   typeCours: 'Lecture',
@@ -198,6 +274,26 @@ const en: TranslationKeys = {
   dayJeudi: 'Thursday',
   dayVendredi: 'Friday',
   daySamedi: 'Saturday',
+  workspace: 'Workspace',
+  workspaceDescription: 'A little room for the things around your schedule.',
+  openWorkspace: 'Open workspace',
+  openWorkspaceLeft: 'Open workspace on the left',
+  openWorkspaceRight: 'Open workspace on the right',
+  pinWorkspace: 'Pin workspace open',
+  unpinWorkspace: 'Unpin workspace',
+  calculator: 'Calculator',
+  paint: 'Paint pad',
+  game: 'Mini game',
+  calculatorError: 'Invalid calculation',
+  notesSavedLocally: 'Saved automatically in this browser',
+  saved: 'Saved',
+  brushColor: 'Brush color',
+  clear: 'Clear',
+  gameHint: 'You are X. Pick a square.',
+  gameWon: 'You won!',
+  gameLost: 'The computer won this round.',
+  gameDraw: 'Draw game.',
+  newGame: 'New game',
   emptyTitle: 'Your timetable is empty',
   emptyDesc: 'Add your first session to get started.',
   emptyButton: 'Add a session',
@@ -269,6 +365,34 @@ const fr: TranslationKeys = {
   exportCalendar: 'Exporter vers Calendrier (.ics)',
   importSuccess: 'Emploi du temps importé avec succès.',
   importError: 'Import impossible.',
+  scheduleRange: 'Plage horaire',
+  scheduleRangeDescription: 'Choisissez le début et la fin de votre emploi du temps. Les séances restent inchangées.',
+  startTime: 'Commence à',
+  endTime: 'Finit à',
+  displayOptions: 'Affichage',
+  showSaturday: 'Afficher le samedi',
+  compactGrid: 'Lignes compactes sur ordinateur',
+  schedulePeriods: 'Périodes et pauses',
+  dragToMove: 'Faites glisser la flèche pour déplacer',
+  themes: 'Thèmes',
+  themeLight: 'Papier',
+  themeDark: 'Minuit',
+  themeOcean: 'Océan',
+  themeForest: 'Forêt',
+  themeSunset: 'Coucher de soleil',
+  themeRose: 'Rose',
+  themeSlate: 'Ardoise',
+  themeCustom: 'Personnalisé',
+  customThemeDescription: 'Créez votre palette. Les changements sont instantanés.',
+  paperColor: 'Arrière-plan',
+  inkColor: 'Texte',
+  brandColor: 'Marque',
+  accentColor: 'Accent',
+  startFresh: 'Recommencer à zéro',
+  startFreshDescription: 'Sauvegarde puis supprime toutes les séances et tous les groupes.',
+  restoreBackup: 'Restaurer la dernière sauvegarde',
+  noBackup: 'Aucune sauvegarde disponible pour le moment.',
+  resetConfirm: 'Recommencer ? Votre emploi du temps actuel sera d’abord sauvegardé.',
   liveTag: 'en cours',
   cancelledTag: 'annulé',
   typeCours: 'Cours',
@@ -282,6 +406,26 @@ const fr: TranslationKeys = {
   dayJeudi: 'Jeudi',
   dayVendredi: 'Vendredi',
   daySamedi: 'Samedi',
+  workspace: 'Espace de travail',
+  workspaceDescription: 'Un petit espace pour ce qui accompagne votre emploi du temps.',
+  openWorkspace: 'Ouvrir l’espace de travail',
+  openWorkspaceLeft: 'Ouvrir à gauche',
+  openWorkspaceRight: 'Ouvrir à droite',
+  pinWorkspace: 'Garder ouvert',
+  unpinWorkspace: 'Ne plus garder ouvert',
+  calculator: 'Calculatrice',
+  paint: 'Carnet de dessin',
+  game: 'Mini-jeu',
+  calculatorError: 'Calcul invalide',
+  notesSavedLocally: 'Enregistrées automatiquement dans ce navigateur',
+  saved: 'Enregistrées',
+  brushColor: 'Couleur du pinceau',
+  clear: 'Effacer',
+  gameHint: 'Vous êtes X. Choisissez une case.',
+  gameWon: 'Vous avez gagné !',
+  gameLost: 'L’ordinateur gagne cette manche.',
+  gameDraw: 'Match nul.',
+  newGame: 'Nouvelle partie',
   emptyTitle: 'Votre emploi du temps est vide',
   emptyDesc: 'Ajoutez votre première séance pour commencer.',
   emptyButton: 'Ajouter une séance',
@@ -353,6 +497,34 @@ const de: TranslationKeys = {
   exportCalendar: 'In Kalender exportieren (.ics)',
   importSuccess: 'Stundenplan erfolgreich importiert.',
   importError: 'Import fehlgeschlagen.',
+  scheduleRange: 'Zeitbereich',
+  scheduleRangeDescription: 'Wählen Sie Beginn und Ende. Sitzungen bleiben unverändert.',
+  startTime: 'Beginn um',
+  endTime: 'Ende um',
+  displayOptions: 'Anzeigeoptionen',
+  showSaturday: 'Samstag anzeigen',
+  compactGrid: 'Kompakte Zeilen auf dem Desktop',
+  schedulePeriods: 'Zeiträume und Pausen',
+  dragToMove: 'Pfeil zum Verschieben ziehen',
+  themes: 'Themen',
+  themeLight: 'Papier',
+  themeDark: 'Mitternacht',
+  themeOcean: 'Ozean',
+  themeForest: 'Wald',
+  themeSunset: 'Sonnenuntergang',
+  themeRose: 'Rose',
+  themeSlate: 'Schiefer',
+  themeCustom: 'Benutzerdefiniert',
+  customThemeDescription: 'Erstelle deine Palette. Änderungen gelten sofort.',
+  paperColor: 'Hintergrund',
+  inkColor: 'Text',
+  brandColor: 'Marke',
+  accentColor: 'Akzent',
+  startFresh: 'Neu beginnen',
+  startFreshDescription: 'Sichert zuerst und entfernt dann alle Sitzungen und Gruppen.',
+  restoreBackup: 'Letzte Sicherung wiederherstellen',
+  noBackup: 'Noch keine Sicherung verfügbar.',
+  resetConfirm: 'Neu beginnen? Dein aktueller Stundenplan wird zuerst gesichert.',
   liveTag: 'läuft',
   cancelledTag: 'abgesagt',
   typeCours: 'Vorlesung',
@@ -366,6 +538,26 @@ const de: TranslationKeys = {
   dayJeudi: 'Donnerstag',
   dayVendredi: 'Freitag',
   daySamedi: 'Samstag',
+  workspace: 'Arbeitsbereich',
+  workspaceDescription: 'Ein kleiner Raum für alles rund um deinen Stundenplan.',
+  openWorkspace: 'Arbeitsbereich öffnen',
+  openWorkspaceLeft: 'Links öffnen',
+  openWorkspaceRight: 'Rechts öffnen',
+  pinWorkspace: 'Arbeitsbereich anheften',
+  unpinWorkspace: 'Arbeitsbereich lösen',
+  calculator: 'Taschenrechner',
+  paint: 'Zeichenfläche',
+  game: 'Minispiel',
+  calculatorError: 'Ungültige Berechnung',
+  notesSavedLocally: 'Automatisch in diesem Browser gespeichert',
+  saved: 'Gespeichert',
+  brushColor: 'Pinselfarbe',
+  clear: 'Löschen',
+  gameHint: 'Du bist X. Wähle ein Feld.',
+  gameWon: 'Du hast gewonnen!',
+  gameLost: 'Der Computer gewinnt diese Runde.',
+  gameDraw: 'Unentschieden.',
+  newGame: 'Neues Spiel',
   emptyTitle: 'Ihr Stundenplan ist leer',
   emptyDesc: 'Fügen Sie Ihre erste Sitzung hinzu.',
   emptyButton: 'Sitzung hinzufügen',
@@ -437,6 +629,34 @@ const es: TranslationKeys = {
   exportCalendar: 'Exportar al Calendario (.ics)',
   importSuccess: 'Horario importado con éxito.',
   importError: 'Error al importar.',
+  scheduleRange: 'Horario visible',
+  scheduleRangeDescription: 'Elige cuándo empieza y termina tu horario. Las sesiones no cambian.',
+  startTime: 'Empieza a las',
+  endTime: 'Termina a las',
+  displayOptions: 'Opciones de visualización',
+  showSaturday: 'Mostrar sábado',
+  compactGrid: 'Filas compactas en escritorio',
+  schedulePeriods: 'Periodos y pausas',
+  dragToMove: 'Arrastra la flecha para mover',
+  themes: 'Temas',
+  themeLight: 'Papel',
+  themeDark: 'Medianoche',
+  themeOcean: 'Océano',
+  themeForest: 'Bosque',
+  themeSunset: 'Atardecer',
+  themeRose: 'Rosa',
+  themeSlate: 'Pizarra',
+  themeCustom: 'Personalizado',
+  customThemeDescription: 'Crea tu paleta. Los cambios se aplican al instante.',
+  paperColor: 'Fondo',
+  inkColor: 'Texto',
+  brandColor: 'Marca',
+  accentColor: 'Acento',
+  startFresh: 'Empezar de cero',
+  startFreshDescription: 'Guarda una copia y elimina todas las sesiones y grupos.',
+  restoreBackup: 'Restaurar última copia',
+  noBackup: 'Aún no hay ninguna copia disponible.',
+  resetConfirm: '¿Empezar de cero? Tu horario actual se guardará primero.',
   liveTag: 'en curso',
   cancelledTag: 'cancelado',
   typeCours: 'Clase',
@@ -450,6 +670,26 @@ const es: TranslationKeys = {
   dayJeudi: 'Jueves',
   dayVendredi: 'Viernes',
   daySamedi: 'Sábado',
+  workspace: 'Espacio de trabajo',
+  workspaceDescription: 'Un pequeño espacio para todo lo que acompaña a tu horario.',
+  openWorkspace: 'Abrir espacio de trabajo',
+  openWorkspaceLeft: 'Abrir a la izquierda',
+  openWorkspaceRight: 'Abrir a la derecha',
+  pinWorkspace: 'Fijar abierto',
+  unpinWorkspace: 'Dejar de fijar',
+  calculator: 'Calculadora',
+  paint: 'Lienzo',
+  game: 'Minijuego',
+  calculatorError: 'Cálculo no válido',
+  notesSavedLocally: 'Guardado automáticamente en este navegador',
+  saved: 'Guardado',
+  brushColor: 'Color del pincel',
+  clear: 'Borrar',
+  gameHint: 'Eres X. Elige una casilla.',
+  gameWon: '¡Has ganado!',
+  gameLost: 'El ordenador gana esta ronda.',
+  gameDraw: 'Empate.',
+  newGame: 'Nueva partida',
   emptyTitle: 'Tu horario está vacío',
   emptyDesc: 'Añade tu primera sesión para empezar.',
   emptyButton: 'Añadir sesión',

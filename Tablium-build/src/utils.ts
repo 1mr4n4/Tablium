@@ -1,4 +1,4 @@
-import { ClassSession, Day, SessionType, TimetableConfig } from './types';
+import { ClassSession, Day, SessionType, TimeSlot, TimetableConfig } from './types';
 
 export const DAY_INDEX: Record<Day, number> = {
   Lundi: 1,

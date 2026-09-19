@@ -1,11 +1,15 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
-import { ClassSession, ThemeMode, TimetableConfig, VisionSettings } from './types';
+import { ClassSession, ThemeMode, TimeSlot, TimetableConfig, VisionSettings } from './types';
 import { defaultTimetable } from './data/sampleData';
 import { createTimeSlots, newId } from './utils';
+import { DEFAULT_CUSTOM_THEME, THEME_PRESETS, ThemePalette } from './themes';
 
 const TIMETABLE_KEY = 'tablium.timetable.v1';
 const THEME_KEY = 'tablium.theme.v1';
 const VISION_KEY = 'tablium.vision.v1';
+const CUSTOM_THEME_KEY = 'tablium.custom-theme.v1';
+const BACKUPS_KEY = 'tablium.timetable.backups.v1';
+const MAX_BACKUPS = 5;
 
 function loadTimetable(): TimetableConfig {
   try {
@@ -19,8 +23,18 @@ function loadTimetable(): TimetableConfig {
 
 function loadTheme(): ThemeMode {
   const stored = localStorage.getItem(THEME_KEY) as ThemeMode | null;
-  if (stored) return stored;
+  if (stored && (stored in THEME_PRESETS || stored === 'custom')) return stored;
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function loadCustomTheme(): ThemePalette {
+  try {
+    const raw = localStorage.getItem(CUSTOM_THEME_KEY);
+    if (raw) return { ...DEFAULT_CUSTOM_THEME, ...JSON.parse(raw) };
+  } catch {
+    // use defaults
+  }
+  return DEFAULT_CUSTOM_THEME;
 }
 
 function loadVision(): VisionSettings {
@@ -33,14 +47,27 @@ function loadVision(): VisionSettings {
   return { provider: 'openai', apiKey: '' };
 }
 
+function saveBackup(config: TimetableConfig) {
+  try {
+    const stored = localStorage.getItem(BACKUPS_KEY);
+    const backups = stored ? (JSON.parse(stored) as TimetableConfig[]) : [];
+    const next = [config, ...backups.filter((backup) => JSON.stringify(backup) !== JSON.stringify(config))].slice(0, MAX_BACKUPS);
+    localStorage.setItem(BACKUPS_KEY, JSON.stringify(next));
+  } catch {
+    // Keep the live in-memory timetable available if browser storage is full.
+  }
+}
+
 interface StoreValue {
   config: TimetableConfig;
   theme: ThemeMode;
+  customTheme: ThemePalette;
   vision: VisionSettings;
   visibleSessions: ClassSession[];
   groups: string[];
   setActiveGroup: (group: string | undefined) => void;
   setTimeRange: (startTime: string, endTime: string) => void;
+  setTimeSlots: (timeSlots: TimeSlot[]) => void;
   setShowSaturday: (show: boolean) => void;
   setCompactGrid: (compact: boolean) => void;
   addSession: (session: Omit<ClassSession, 'id'>) => void;
@@ -49,9 +76,13 @@ interface StoreValue {
   duplicateSession: (id: string) => void;
   replaceSessions: (sessions: ClassSession[]) => void;
   toggleTheme: () => void;
+  setTheme: (theme: ThemeMode) => void;
+  setCustomTheme: (theme: ThemePalette) => void;
   setVision: (v: VisionSettings) => void;
   exportJSON: () => string;
   importJSON: (json: string) => { ok: boolean; error?: string };
+  resetTimetable: () => void;
+  restoreBackup: () => boolean;
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
@@ -59,20 +90,41 @@ const StoreContext = createContext<StoreValue | null>(null);
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [config, setConfig] = useState<TimetableConfig>(loadTimetable);
   const [theme, setTheme] = useState<ThemeMode>(loadTheme);
+  const [customTheme, setCustomThemeState] = useState<ThemePalette>(loadCustomTheme);
   const [vision, setVisionState] = useState<VisionSettings>(loadVision);
 
   useEffect(() => {
-    localStorage.setItem(TIMETABLE_KEY, JSON.stringify(config));
+    try {
+      const serialized = JSON.stringify(config);
+      const previous = localStorage.getItem(TIMETABLE_KEY);
+      if (previous && previous !== serialized) saveBackup(JSON.parse(previous));
+      localStorage.setItem(TIMETABLE_KEY, serialized);
+    } catch {
+      // The current state remains usable in memory if persistence is unavailable.
+    }
   }, [config]);
 
   useEffect(() => {
     localStorage.setItem(THEME_KEY, theme);
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }, [theme]);
+    const palette = theme === 'custom' ? customTheme : THEME_PRESETS[theme];
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.classList.toggle('dark', theme === 'dark' || theme === 'slate');
+    root.style.setProperty('--theme-paper', palette.paper);
+    root.style.setProperty('--theme-ink', palette.ink);
+    root.style.setProperty('--theme-surface', palette.surface);
+    root.style.setProperty('--theme-border', palette.border);
+    root.style.setProperty('--theme-brand', palette.brand);
+    root.style.setProperty('--theme-accent', palette.accent);
+  }, [theme, customTheme]);
 
   useEffect(() => {
     localStorage.setItem(VISION_KEY, JSON.stringify(vision));
   }, [vision]);
+
+  useEffect(() => {
+    localStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify(customTheme));
+  }, [customTheme]);
 
   const groups = useMemo(() => {
     const set = new Set<string>();
@@ -92,6 +144,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const setTimeRange = useCallback((startTime: string, endTime: string) => {
     const timeSlots = createTimeSlots(startTime, endTime);
     if (timeSlots.length === 0) return;
+    setConfig((c) => ({ ...c, timeSlots }));
+  }, []);
+
+  const setTimeSlots = useCallback((timeSlots: TimeSlot[]) => {
     setConfig((c) => ({ ...c, timeSlots }));
   }, []);
 
@@ -138,8 +194,46 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setConfig((c) => ({ ...c, sessions }));
   }, []);
 
+  const resetTimetable = useCallback(() => {
+    setConfig((current) => {
+      saveBackup(current);
+      return {
+        ...defaultTimetable,
+        id: newId(),
+        timeSlots: current.timeSlots,
+        showSaturday: current.showSaturday,
+        compactGrid: current.compactGrid,
+        sessions: [],
+        activeGroup: undefined,
+      };
+    });
+  }, []);
+
+  const restoreBackup = useCallback(() => {
+    try {
+      const stored = localStorage.getItem(BACKUPS_KEY);
+      const backups = stored ? (JSON.parse(stored) as TimetableConfig[]) : [];
+      const latest = backups[0];
+      if (!latest) return false;
+      setConfig((current) => {
+        saveBackup(current);
+        return { ...defaultTimetable, ...latest };
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }, []);
+
   const toggleTheme = useCallback(() => {
     setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
+  }, []);
+
+  const setThemeChoice = useCallback((nextTheme: ThemeMode) => setTheme(nextTheme), []);
+
+  const setCustomTheme = useCallback((nextTheme: ThemePalette) => {
+    setCustomThemeState(nextTheme);
+    setTheme('custom');
   }, []);
 
   const setVision = useCallback((v: VisionSettings) => {
@@ -172,11 +266,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const value: StoreValue = {
     config,
     theme,
+    customTheme,
     vision,
     visibleSessions,
     groups,
     setActiveGroup,
     setTimeRange,
+    setTimeSlots,
     setShowSaturday,
     setCompactGrid,
     addSession,
@@ -185,9 +281,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     duplicateSession,
     replaceSessions,
     toggleTheme,
+    setTheme: setThemeChoice,
+    setCustomTheme,
     setVision,
     exportJSON,
     importJSON,
+    resetTimetable,
+    restoreBackup,
   };
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
