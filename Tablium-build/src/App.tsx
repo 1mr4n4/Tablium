@@ -101,7 +101,32 @@ function Dashboard() {
       if (!button) return;
       playUiSound((button.dataset.sound as UiSound | undefined) ?? 'click', soundEnabled);
     }}>
-      {stickers.map((sticker, index) => <motion.div key={sticker.id} drag dragMomentum={false} dragElastic={0.12} onDragEnd={(_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => updateSticker(sticker.id, { x: Math.max(2, Math.min(94, (info.point.x / window.innerWidth) * 100)), y: Math.max(8, Math.min(92, (info.point.y / window.innerHeight) * 100)) })} animate={{ rotate: sticker.rotation, scale: sticker.scale, y: [0, -4, 0] }} transition={{ y: { duration: 2.4 + (index % 3) * 0.5, repeat: Infinity, ease: 'easeInOut' } }} className="fixed z-20 cursor-grab select-none active:cursor-grabbing" style={{ left: `${sticker.x}%`, top: `${sticker.y}%` }}>{sticker.content.startsWith('data:image/') ? <img src={sticker.content} alt="" className="h-12 w-12 object-contain drop-shadow-lg" draggable={false} /> : <span className="text-2xl drop-shadow-lg">{sticker.content}</span>}</motion.div>)}
+      {stickers.map((sticker, index) => <motion.div
+        key={sticker.id}
+        drag
+        dragMomentum={false}
+        dragElastic={0.04}
+        dragConstraints={{
+          left: -window.innerWidth + 48,
+          right: window.innerWidth - 48,
+          top: -window.innerHeight + 48,
+          bottom: window.innerHeight - 48,
+        }}
+        onDragEnd={(_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+          const stickerSize = sticker.content.startsWith('data:image/') ? 48 : 32;
+          const maxX = Math.max(2, 100 - (stickerSize / window.innerWidth) * 100);
+          const maxY = Math.max(8, 100 - (stickerSize / window.innerHeight) * 100);
+          const nextX = sticker.x + (info.offset.x / window.innerWidth) * 100;
+          const nextY = sticker.y + (info.offset.y / window.innerHeight) * 100;
+          updateSticker(sticker.id, { x: Math.max(2, Math.min(maxX, nextX)), y: Math.max(8, Math.min(maxY, nextY)) });
+        }}
+        animate={{ rotate: sticker.rotation, scale: sticker.scale, y: [0, -4, 0] }}
+        transition={{ y: { duration: 2.4 + (index % 3) * 0.5, repeat: Infinity, ease: 'easeInOut' } }}
+        className="fixed z-20 cursor-grab select-none active:cursor-grabbing"
+        style={{ left: `${sticker.x}%`, top: `${sticker.y}%` }}
+      >
+        {sticker.content.startsWith('data:image/') ? <img src={sticker.content} alt="" className="h-12 w-12 object-contain drop-shadow-lg" draggable={false} /> : <span className="text-2xl drop-shadow-lg">{sticker.content}</span>}
+      </motion.div>)}
       {backgroundText && <div className="pointer-events-none fixed bottom-8 left-1/2 z-10 max-w-[80vw] -translate-x-1/2 rotate-[-2deg] rounded-xl bg-white/75 px-4 py-2 text-center font-display text-lg italic text-ink-800 shadow-lg backdrop-blur-sm">{backgroundText}</div>}
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-ink/[0.08] bg-paper/85 backdrop-blur-md dark:border-white/[0.08] dark:bg-ink/85">
