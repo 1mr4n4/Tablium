@@ -18,22 +18,98 @@ Tablium is a responsive timetable workspace for students and teams. Build a sche
 - Local persistence with rolling timetable backups and safe restore.
 - Installable PWA with offline caching after the first load.
 
-## Quick Start
+## Installation From Scratch
 
-The application lives in `Tablium-build`.
+Tablium is a web application. You do not need a database, account, or separate backend.
+
+### 1. Install Node.js and npm
+
+npm is installed together with Node.js. Tablium uses Vite 7, which requires:
+
+- Node.js `20.19.0` or newer in the 20.x line, or Node.js `22.12.0` or newer.
+- npm, included with Node.js.
+- Git, only if you want to clone the repository from GitHub.
+
+Download the **LTS** version of Node.js from [nodejs.org](https://nodejs.org/). During installation, keep the option to add Node.js to your system PATH enabled. Restart your terminal after installation.
+
+Confirm the installation:
 
 ```bash
-cd Tablium-build
+node --version
+npm --version
+```
+
+On Windows, you can also install Node.js with:
+
+```powershell
+winget install OpenJS.NodeJS.LTS
+```
+
+On macOS with Homebrew:
+
+```bash
+brew install node
+```
+
+On Debian or Ubuntu, use the current Node.js LTS installer from [nodejs.org](https://nodejs.org/) or a Node version manager such as `nvm`. Avoid relying on an old distribution Node.js package because it may be below Tablium's required version.
+
+### 2. Get the project
+
+With Git installed:
+
+```bash
+git clone https://github.com/1mr4n4/Tablium.git
+cd Tablium/Tablium-build
+```
+
+Alternatively, select **Code > Download ZIP** on GitHub, extract the ZIP, open a terminal in the extracted folder, and enter its `Tablium-build` directory.
+
+### 3. Install dependencies
+
+Run this inside `Tablium-build`:
+
+```bash
 npm install
+```
+
+This reads `package.json` and `package-lock.json` and installs the exact project dependencies. Do not use `npm install --force` or `--legacy-peer-deps` unless you are deliberately troubleshooting a local environment.
+
+### 4. Start the development app
+
+```bash
 npm run dev
 ```
 
-Open the local URL printed by Vite. For a production build:
+Open the `Local` URL printed by Vite, usually `http://localhost:5173`. Keep the terminal running while developing. Press `Ctrl+C` to stop the server.
+
+### 5. Build and preview the production app
 
 ```bash
 npm run build
 npm run preview
 ```
+
+Open the preview URL printed by Vite. The build output is placed in `Tablium-build/dist` and can be deployed to any static web host.
+
+### Troubleshooting installation
+
+If `npm` or `node` is not recognized, close and reopen the terminal after installing Node.js. If the version is too old, install the latest Node.js LTS and check again with `node --version`.
+
+If dependencies are corrupted, close running Vite terminals and run:
+
+```bash
+rm -rf node_modules
+npm install
+```
+
+On Windows PowerShell, use:
+
+```powershell
+Remove-Item -Recurse -Force node_modules
+npm install
+```
+
+If `npm run dev` says `vite` is not recognized, `npm install` did not finish successfully. Resolve the first `npm` error, run `npm install` again, and then retry the dev command.
 
 ## Data And Privacy
 
