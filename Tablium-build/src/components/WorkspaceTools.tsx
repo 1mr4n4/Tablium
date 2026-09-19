@@ -59,6 +59,7 @@ export default function WorkspaceTools({ tool, stackIndex = 0, showSwitch = fals
   const [savedNotes, setSavedNotes] = useState(false);
   const [expression, setExpression] = useState('');
   const [result, setResult] = useState('0');
+  const [angleMode, setAngleMode] = useState<'DEG' | 'RAD'>('DEG');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawingRef = useRef(false);
   const [color, setColor] = useState('#1e3a5f');
@@ -97,12 +98,35 @@ export default function WorkspaceTools({ tool, stackIndex = 0, showSwitch = fals
 
   function calculate() {
     if (!expression.trim()) return;
-    if (!/^[0-9+\-*/().%\s]+$/.test(expression)) {
+    if (!/^[0-9+\-*/().%!^πe\s,a-z√]+$/i.test(expression)) {
+      setResult(t.calculatorError);
+      return;
+    }
+    const identifiers = expression.match(/[a-z]+/gi) ?? [];
+    if (identifiers.some((identifier) => !['sin', 'cos', 'tan', 'log', 'ln', 'e'].includes(identifier.toLowerCase()))) {
       setResult(t.calculatorError);
       return;
     }
     try {
-      const value = Function(`"use strict"; return (${expression})`)();
+      const radians = angleMode === 'DEG' ? '(Math.PI / 180) *' : '';
+      let normalized = expression
+        .replace(/π/g, 'Math.PI')
+        .replace(/\be\b/g, 'Math.E')
+        .replace(/√\(/g, 'Math.sqrt(')
+        .replace(/\^/g, '**')
+        .replace(/\bln\(/gi, 'Math.log(')
+        .replace(/\blog\(/gi, 'Math.log10(')
+        .replace(/\bsin\(([^()]*)\)/gi, `Math.sin(${radians}($1))`)
+        .replace(/\bcos\(([^()]*)\)/gi, `Math.cos(${radians}($1))`)
+        .replace(/\btan\(([^()]*)\)/gi, `Math.tan(${radians}($1))`);
+      normalized = normalized.replace(/(\d+(?:\.\d+)?)!/g, 'factorial($1)');
+      const factorial = (value: number): number => {
+        if (value < 0 || !Number.isInteger(value) || value > 170) throw new Error('factorial');
+        let total = 1;
+        for (let i = 2; i <= value; i += 1) total *= i;
+        return total;
+      };
+      const value = Function('factorial', `"use strict"; return (${normalized})`)(factorial);
       setResult(Number.isFinite(value) ? String(value) : t.calculatorError);
     } catch {
       setResult(t.calculatorError);
@@ -240,17 +264,20 @@ export default function WorkspaceTools({ tool, stackIndex = 0, showSwitch = fals
       <motion.div key={activeTool} initial={{ opacity: 0, y: 8, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="safe-bottom min-h-0 overflow-y-auto p-3">
         {activeTool === 'calculator' && (
           <div className="mx-auto max-w-sm">
-            <div className="rounded-xl bg-ink-800 p-4 text-right text-paper">
+            <div className="rounded-xl bg-ink-800 p-3 text-right text-paper">
               <div className="min-h-5 text-xs text-paper/50">{expression || ' '}</div>
               <div className="mt-1 truncate text-2xl font-semibold">{result}</div>
             </div>
-            <div className="mt-2 grid grid-cols-4 gap-1.5">
-              {['7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '0', '.', '(', ')'].map((key) => (
-                <button key={key} onClick={() => appendExpression(key)} className="focus-ring rounded-lg glass px-3 py-2 text-sm font-medium hover:-translate-y-0.5">{key}</button>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-[10px] font-semibold tracking-wider text-ink-500">SCIENTIFIC</span>
+              <button onClick={() => setAngleMode((mode) => mode === 'DEG' ? 'RAD' : 'DEG')} className="focus-ring rounded-md bg-brand px-2 py-1 text-[10px] font-semibold text-white dark:bg-live dark:text-ink-800">{angleMode}</button>
+            </div>
+            <div className="mt-2 grid grid-cols-5 gap-1.5">
+              {['sin(', 'cos(', 'tan(', 'log(', 'ln(', '√(', '^', 'π', 'e', '!', '7', '8', '9', '/', '(', '4', '5', '6', '*', ')', '1', '2', '3', '-', '%', '0', '.', ',', '+', '⌫'].map((key) => (
+                <button key={key} onClick={() => key === '⌫' ? setExpression((current) => current.slice(0, -1)) : appendExpression(key)} className="focus-ring rounded-lg glass px-2 py-1.5 text-xs font-medium hover:-translate-y-0.5">{key}</button>
               ))}
-              <button onClick={() => setExpression('')} className="focus-ring rounded-lg bg-session-examen/10 px-3 py-2.5 text-xs text-session-examen">AC</button>
-              <button onClick={() => setExpression((current) => current.slice(0, -1))} className="focus-ring rounded-lg glass px-3 py-2.5 text-xs">⌫</button>
-              <button onClick={calculate} className="focus-ring col-span-2 rounded-lg bg-brand px-3 py-2.5 text-sm font-semibold text-white dark:bg-live dark:text-ink-800">=</button>
+              <button onClick={() => setExpression('')} className="focus-ring col-span-2 rounded-lg bg-session-examen/10 px-2 py-1.5 text-xs text-session-examen">AC</button>
+              <button onClick={calculate} className="focus-ring col-span-3 rounded-lg bg-brand px-2 py-1.5 text-sm font-semibold text-white dark:bg-live dark:text-ink-800">=</button>
             </div>
           </div>
         )}
@@ -276,7 +303,17 @@ export default function WorkspaceTools({ tool, stackIndex = 0, showSwitch = fals
               <label className="flex items-center gap-2 text-xs text-ink-500 dark:text-ink-400">{t.brushColor}<input type="color" value={color} onChange={(event) => setColor(event.target.value)} className="h-7 w-9 cursor-pointer rounded border-0 bg-transparent p-0" /></label>
               <button onClick={clearCanvas} className="focus-ring flex items-center gap-1 rounded-lg glass px-3 py-2 text-xs"><Eraser size={14} /> {t.clear}</button>
             </div>
-            <canvas ref={canvasRef} width={900} height={360} onPointerDown={startDrawing} onPointerMove={draw} onPointerUp={stopDrawing} onPointerLeave={stopDrawing} className="h-auto w-full touch-none rounded-xl border border-ink/[0.1] bg-white dark:border-white/[0.1]" />
+            <canvas
+              ref={canvasRef}
+              width={900}
+              height={360}
+              onPointerDown={(event) => { event.stopPropagation(); startDrawing(event); }}
+              onPointerMove={(event) => { event.stopPropagation(); draw(event); }}
+              onPointerUp={(event) => { event.stopPropagation(); stopDrawing(); }}
+              onPointerCancel={(event) => { event.stopPropagation(); stopDrawing(); }}
+              onPointerLeave={(event) => { event.stopPropagation(); stopDrawing(); }}
+              className="h-auto w-full touch-none rounded-xl border border-ink/[0.1] bg-white dark:border-white/[0.1]"
+            />
           </div>
         )}
 
