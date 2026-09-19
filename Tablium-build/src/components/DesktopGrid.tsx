@@ -64,8 +64,10 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
 
   const cols = timeSlots.length;
 
+  const visibleDays = config.showSaturday === false ? DAYS.filter((day) => day !== 'Samedi') : DAYS;
+
   return (
-    <div className="glass rounded-2xl overflow-hidden">
+    <div className="glass overflow-x-auto rounded-2xl">
       <div
         className="grid border-b border-ink/[0.08] dark:border-white/[0.08]"
         style={{ gridTemplateColumns: `100px repeat(${cols}, 1fr)` }}
@@ -92,7 +94,7 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
         })}
       </div>
 
-      {DAYS.map((day) => {
+      {visibleDays.map((day) => {
         const isToday = day === todayName;
         const dayLabel = t[DAY_KEY[day] as keyof typeof t] as string;
         return (
@@ -117,7 +119,7 @@ export default function DesktopGrid({ config, sessions, onSessionClick, onEmptyS
               return (
                 <div
                   key={si}
-                  className={`relative min-h-[90px] border-r border-ink/[0.06] dark:border-white/[0.06] last:border-r-0 group/cell ${
+                  className={`relative ${config.compactGrid ? 'min-h-[64px]' : 'min-h-[90px]'} border-r border-ink/[0.06] dark:border-white/[0.06] last:border-r-0 group/cell ${
                     current ? 'bg-brand/[0.03] dark:bg-live/[0.04]' : ''
                   }`}
                   onDoubleClick={() => onEmptySlotClick(day, slot.startTime)}

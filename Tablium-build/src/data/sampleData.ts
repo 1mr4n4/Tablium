@@ -4,6 +4,8 @@ export const defaultTimetable: TimetableConfig = {
   id: 'default',
   name: 'Mon Emploi du Temps',
   activeGroup: undefined,
+  showSaturday: true,
+  compactGrid: false,
   timeSlots: [
     { startTime: '08:30', endTime: '10:15' },
     { startTime: '10:30', endTime: '12:15' },

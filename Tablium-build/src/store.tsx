@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import { ClassSession, ThemeMode, TimetableConfig, VisionSettings } from './types';
 import { defaultTimetable } from './data/sampleData';
-import { newId } from './utils';
+import { createTimeSlots, newId } from './utils';
 
 const TIMETABLE_KEY = 'tablium.timetable.v1';
 const THEME_KEY = 'tablium.theme.v1';
@@ -10,7 +10,7 @@ const VISION_KEY = 'tablium.vision.v1';
 function loadTimetable(): TimetableConfig {
   try {
     const raw = localStorage.getItem(TIMETABLE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return { ...defaultTimetable, ...JSON.parse(raw) };
   } catch {
     // fall through to default
   }
@@ -40,6 +40,9 @@ interface StoreValue {
   visibleSessions: ClassSession[];
   groups: string[];
   setActiveGroup: (group: string | undefined) => void;
+  setTimeRange: (startTime: string, endTime: string) => void;
+  setShowSaturday: (show: boolean) => void;
+  setCompactGrid: (compact: boolean) => void;
   addSession: (session: Omit<ClassSession, 'id'>) => void;
   updateSession: (id: string, patch: Partial<ClassSession>) => void;
   deleteSession: (id: string) => void;
@@ -84,6 +87,20 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const setActiveGroup = useCallback((group: string | undefined) => {
     setConfig((c) => ({ ...c, activeGroup: group }));
+  }, []);
+
+  const setTimeRange = useCallback((startTime: string, endTime: string) => {
+    const timeSlots = createTimeSlots(startTime, endTime);
+    if (timeSlots.length === 0) return;
+    setConfig((c) => ({ ...c, timeSlots }));
+  }, []);
+
+  const setShowSaturday = useCallback((show: boolean) => {
+    setConfig((c) => ({ ...c, showSaturday: show }));
+  }, []);
+
+  const setCompactGrid = useCallback((compact: boolean) => {
+    setConfig((c) => ({ ...c, compactGrid: compact }));
   }, []);
 
   const addSession = useCallback((session: Omit<ClassSession, 'id'>) => {
@@ -142,6 +159,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         name: parsed.name ?? 'Mon Emploi du Temps',
         activeGroup: parsed.activeGroup,
         timeSlots: parsed.timeSlots ?? defaultTimetable.timeSlots,
+        showSaturday: parsed.showSaturday ?? defaultTimetable.showSaturday,
+        compactGrid: parsed.compactGrid ?? defaultTimetable.compactGrid,
         sessions: parsed.sessions,
       });
       return { ok: true };
@@ -157,6 +176,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     visibleSessions,
     groups,
     setActiveGroup,
+    setTimeRange,
+    setShowSaturday,
+    setCompactGrid,
     addSession,
     updateSession,
     deleteSession,

@@ -42,6 +42,8 @@ export interface TimetableConfig {
   activeGroup?: string;
   timeSlots: TimeSlot[];
   sessions: ClassSession[];
+  showSaturday?: boolean;
+  compactGrid?: boolean;
 }
 
 export type VisionProvider = 'openai' | 'anthropic' | 'gemini';

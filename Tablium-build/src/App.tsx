@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Settings, Users } from 'lucide-react';
 import { StoreProvider, useStore } from './store';
-import { ClassSession, Day, DAYS } from './types';
+import { ClassSession, Day } from './types';
 import { useLang } from './i18n';
 import DesktopGrid from './components/DesktopGrid';
 import MobileTimetable from './components/MobileTimetable';
@@ -97,6 +97,7 @@ function Dashboard() {
             <div className="md:hidden">
               <MobileTimetable
                 sessions={visibleSessions}
+                showSaturday={config.showSaturday}
                 onSessionClick={openSession}
                 onAddClick={(day) => openCreate(day)}
               />

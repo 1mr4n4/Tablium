@@ -22,6 +22,23 @@ export function minutesToTime(mins: number): string {
   return `${h}:${m}`;
 }
 
+export function createTimeSlots(startTime: string, endTime: string): TimeSlot[] {
+  const start = timeToMinutes(startTime);
+  const end = timeToMinutes(endTime);
+  const slots: TimeSlot[] = [];
+  const classLength = 105;
+  const breakLength = 15;
+
+  for (let cursor = start; cursor < end; cursor += classLength + breakLength) {
+    const slotEnd = Math.min(cursor + classLength, end);
+    if (slotEnd - cursor >= 30) {
+      slots.push({ startTime: minutesToTime(cursor), endTime: minutesToTime(slotEnd) });
+    }
+  }
+
+  return slots;
+}
+
 export function formatDuration(mins: number): string {
   if (mins <= 0) return '0 min';
   const h = Math.floor(mins / 60);

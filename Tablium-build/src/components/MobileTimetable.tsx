@@ -8,6 +8,7 @@ import SessionCard from './SessionCard';
 
 interface MobileTimetableProps {
   sessions: ClassSession[];
+  showSaturday?: boolean;
   onSessionClick: (session: ClassSession) => void;
   onAddClick: (day: Day) => void;
 }
@@ -21,19 +22,20 @@ const DAY_KEY: Record<Day, string> = {
   Samedi: 'daySamedi',
 };
 
-export default function MobileTimetable({ sessions, onSessionClick, onAddClick }: MobileTimetableProps) {
+export default function MobileTimetable({ sessions, showSaturday = true, onSessionClick, onAddClick }: MobileTimetableProps) {
   const { t } = useLang();
   const todayJs = new Date().getDay();
   const todayName = DAYS.find((d) => DAY_INDEX[d] === todayJs);
   const [activeDay, setActiveDay] = useState<Day>(todayName ?? 'Lundi');
   const [direction, setDirection] = useState(0);
 
-  const activeIndex = DAYS.indexOf(activeDay);
+  const visibleDays = showSaturday ? DAYS : DAYS.filter((day) => day !== 'Samedi');
+  const activeIndex = visibleDays.indexOf(activeDay);
 
   function goTo(index: number) {
-    const clamped = Math.max(0, Math.min(DAYS.length - 1, index));
+    const clamped = Math.max(0, Math.min(visibleDays.length - 1, index));
     setDirection(clamped > activeIndex ? 1 : -1);
-    setActiveDay(DAYS[clamped]);
+    setActiveDay(visibleDays[clamped]);
   }
 
   function handleDragEnd(_: any, info: PanInfo) {
@@ -51,7 +53,7 @@ export default function MobileTimetable({ sessions, onSessionClick, onAddClick }
     <div>
       {/* Day tabs */}
       <div className="sticky top-[52px] z-20 -mx-4 mb-3 flex gap-1.5 overflow-x-auto bg-paper/90 px-4 py-2 backdrop-blur dark:bg-ink/90">
-        {DAYS.map((day) => {
+        {visibleDays.map((day) => {
           const active = day === activeDay;
           const label = t[DAY_KEY[day] as keyof typeof t] as string;
           return (
