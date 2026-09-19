@@ -22,7 +22,7 @@ function extractJSONArray(text: string): any[] {
   const cleaned = text.trim().replace(/^```(json)?/i, '').replace(/```$/, '').trim();
   const start = cleaned.indexOf('[');
   const end = cleaned.lastIndexOf(']');
-  if (start === -1 || end === -1) throw new Error("Aucun tableau JSON trouvé dans la réponse du modèle.");
+    if (start === -1 || end === -1) throw new Error('VISION_INVALID_RESPONSE');
   return JSON.parse(cleaned.slice(start, end + 1));
 }
 
@@ -76,7 +76,7 @@ async function callOpenAI(apiKey: string, base64: string, mimeType: string): Pro
       ],
     }),
   });
-  if (!res.ok) throw new Error(`OpenAI a répondu avec une erreur (${res.status}).`);
+    if (!res.ok) throw new Error(`VISION_PROVIDER_ERROR:OpenAI:${res.status}`);
   const data = await res.json();
   return data.choices?.[0]?.message?.content ?? '';
 }
@@ -104,7 +104,7 @@ async function callAnthropic(apiKey: string, base64: string, mimeType: string): 
       ],
     }),
   });
-  if (!res.ok) throw new Error(`Claude a répondu avec une erreur (${res.status}).`);
+    if (!res.ok) throw new Error(`VISION_PROVIDER_ERROR:Claude:${res.status}`);
   const data = await res.json();
   return (data.content ?? []).map((b: any) => b.text ?? '').join('\n');
 }
@@ -124,14 +124,14 @@ async function callGemini(apiKey: string, base64: string, mimeType: string): Pro
       }),
     }
   );
-  if (!res.ok) throw new Error(`Gemini a répondu avec une erreur (${res.status}).`);
+    if (!res.ok) throw new Error(`VISION_PROVIDER_ERROR:Gemini:${res.status}`);
   const data = await res.json();
   return data.candidates?.[0]?.content?.parts?.map((p: any) => p.text ?? '').join('\n') ?? '';
 }
 
 export async function parseTimetableImage(file: File, settings: VisionSettings): Promise<ClassSession[]> {
   if (!settings.apiKey) {
-    throw new Error("Ajoutez d'abord une clé API dans les paramètres.");
+     throw new Error('VISION_API_KEY_REQUIRED');
   }
   const base64 = await fileToBase64(file);
   const mimeType = file.type || 'image/png';

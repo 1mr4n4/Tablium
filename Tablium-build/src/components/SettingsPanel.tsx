@@ -63,7 +63,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
         setImportMsg({ type: 'ok', text: t.imageSuccess(parsed.length) });
       }
     } catch (err: any) {
-      setImportMsg({ type: 'error', text: err.message ?? t.imageError });
+        setImportMsg({ type: 'error', text: localizeImportError(err, t) });
     } finally {
       setImporting(false);
     }
@@ -83,6 +83,19 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
       );
     };
     reader.readAsText(file);
+  }
+  function localizeImportError(error: unknown, t: ReturnType<typeof useLang>['t']): string {
+    const code = error instanceof Error ? error.message : String(error ?? '');
+    if (code === 'VISION_API_KEY_REQUIRED') return t.apiKeyRequired;
+    if (code === 'VISION_INVALID_RESPONSE') return t.visionInvalidResponse;
+    if (code === 'INVALID_TIMETABLE_FILE') return t.invalidTimetableFile;
+    if (code === 'INVALID_JSON') return t.invalidJson;
+    if (code.startsWith('VISION_PROVIDER_ERROR:')) {
+      const [, provider, status] = code.split(':');
+      return t.visionResponseError(provider, Number(status));
+    }
+    if (error instanceof DOMException || code.includes('FileReader')) return t.visionReadError;
+    return t.imageError;
   }
 
   function handleExportJSON() {

@@ -246,7 +246,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     try {
       const parsed = JSON.parse(json);
       if (!parsed || !Array.isArray(parsed.sessions)) {
-        return { ok: false, error: "Le fichier ne contient pas de champ 'sessions' valide." };
+        return { ok: false, error: 'INVALID_TIMETABLE_FILE' };
       }
       setConfig({
         id: parsed.id ?? newId(),
@@ -259,7 +259,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       });
       return { ok: true };
     } catch (e) {
-      return { ok: false, error: 'JSON invalide.' };
+      return { ok: false, error: 'INVALID_JSON' };
     }
   }, []);
 

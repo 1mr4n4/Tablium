@@ -121,6 +121,11 @@ type TranslationKeys = {
   restoreBackup: string;
   noBackup: string;
   resetConfirm: string;
+  apiKeyRequired: string;
+  visionResponseError: (provider: string, status: number) => string;
+  visionInvalidResponse: string;
+  visionReadError: string;
+  invalidTimetableFile: string;
 
   // SessionCard
   liveTag: string;
@@ -262,6 +267,11 @@ const en: TranslationKeys = {
   restoreBackup: 'Restore latest backup',
   noBackup: 'No backup is available yet.',
   resetConfirm: 'Start over? Your current timetable will be backed up first.',
+  apiKeyRequired: 'Add an API key in Settings before importing an image.',
+  visionResponseError: (provider: string, status: number) => `${provider} returned an error (${status}).`,
+  visionInvalidResponse: 'The vision provider returned an unreadable response.',
+  visionReadError: 'The image could not be read. Try another image.',
+  invalidTimetableFile: 'The file does not contain a valid timetable.',
   liveTag: 'live',
   cancelledTag: 'cancelled',
   typeCours: 'Lecture',
@@ -395,6 +405,11 @@ const fr: TranslationKeys = {
   restoreBackup: 'Restaurer la dernière sauvegarde',
   noBackup: 'Aucune sauvegarde disponible pour le moment.',
   resetConfirm: 'Recommencer ? Votre emploi du temps actuel sera d’abord sauvegardé.',
+  apiKeyRequired: 'Ajoutez une clé API dans les paramètres avant d’importer une image.',
+  visionResponseError: (provider: string, status: number) => `${provider} a renvoyé une erreur (${status}).`,
+  visionInvalidResponse: 'Le fournisseur de vision a renvoyé une réponse illisible.',
+  visionReadError: 'Impossible de lire l’image. Essayez une autre image.',
+  invalidTimetableFile: 'Le fichier ne contient pas d’emploi du temps valide.',
   liveTag: 'en cours',
   cancelledTag: 'annulé',
   typeCours: 'Cours',
@@ -528,6 +543,11 @@ const de: TranslationKeys = {
   restoreBackup: 'Letzte Sicherung wiederherstellen',
   noBackup: 'Noch keine Sicherung verfügbar.',
   resetConfirm: 'Neu beginnen? Dein aktueller Stundenplan wird zuerst gesichert.',
+  apiKeyRequired: 'Füge in den Einstellungen einen API-Schlüssel hinzu, bevor du ein Bild importierst.',
+  visionResponseError: (provider: string, status: number) => `${provider} hat einen Fehler zurückgegeben (${status}).`,
+  visionInvalidResponse: 'Der Vision-Anbieter hat eine unlesbare Antwort zurückgegeben.',
+  visionReadError: 'Das Bild konnte nicht gelesen werden. Versuche ein anderes Bild.',
+  invalidTimetableFile: 'Die Datei enthält keinen gültigen Stundenplan.',
   liveTag: 'läuft',
   cancelledTag: 'abgesagt',
   typeCours: 'Vorlesung',
@@ -661,6 +681,11 @@ const es: TranslationKeys = {
   restoreBackup: 'Restaurar última copia',
   noBackup: 'Aún no hay ninguna copia disponible.',
   resetConfirm: '¿Empezar de cero? Tu horario actual se guardará primero.',
+  apiKeyRequired: 'Añade una clave API en Ajustes antes de importar una imagen.',
+  visionResponseError: (provider: string, status: number) => `${provider} devolvió un error (${status}).`,
+  visionInvalidResponse: 'El proveedor de visión devolvió una respuesta ilegible.',
+  visionReadError: 'No se pudo leer la imagen. Prueba con otra imagen.',
+  invalidTimetableFile: 'El archivo no contiene un horario válido.',
   liveTag: 'en curso',
   cancelledTag: 'cancelado',
   typeCours: 'Clase',
