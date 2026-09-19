@@ -30,17 +30,26 @@ function Dashboard() {
       return [];
     }
   });
-  const [workspaceSide, setWorkspaceSide] = useState<WorkspaceSide>(() => {
-    const saved = localStorage.getItem('tablium.workspace-side.v1');
-    return saved === 'left' ? 'left' : 'right';
+  const [workspaceSides, setWorkspaceSides] = useState<Record<ToolId, WorkspaceSide>>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('tablium.workspace-sides.v1') ?? '{}');
+      return {
+        calculator: saved.calculator === 'left' ? 'left' : 'right',
+        notes: saved.notes === 'left' ? 'left' : 'right',
+        paint: saved.paint === 'left' ? 'left' : 'right',
+        game: saved.game === 'left' ? 'left' : 'right',
+      };
+    } catch {
+      return { calculator: 'right', notes: 'right', paint: 'right', game: 'right' };
+    }
   });
   const [workspacePinned, setWorkspacePinned] = useState(() => localStorage.getItem('tablium.workspace-pinned.v1') === 'true');
 
   React.useEffect(() => {
-    localStorage.setItem('tablium.workspace-side.v1', workspaceSide);
+    localStorage.setItem('tablium.workspace-sides.v1', JSON.stringify(workspaceSides));
     localStorage.setItem('tablium.workspace-pinned.v1', String(workspacePinned));
     localStorage.setItem('tablium.workspace-open.v1', JSON.stringify(workspacePinned ? workspaceTools : []));
-  }, [workspaceSide, workspacePinned, workspaceTools]);
+  }, [workspaceSides, workspacePinned, workspaceTools]);
 
   function openSession(session: ClassSession) {
     setSelected(session);
@@ -133,15 +142,15 @@ function Dashboard() {
       </main>
 
       <AnimatePresence>
-        {workspaceTools.map((tool, stackIndex) => (
+        {workspaceTools.map((tool) => (
           <WorkspaceTools
             key={tool}
             tool={tool}
-            stackIndex={stackIndex}
-            side={workspaceSide}
+            stackIndex={workspaceTools.filter((item) => workspaceSides[item] === workspaceSides[tool]).indexOf(tool)}
+            side={workspaceSides[tool]}
             pinned={workspacePinned}
             onClose={() => setWorkspaceTools((current) => current.filter((item) => item !== tool))}
-            onSideChange={setWorkspaceSide}
+            onSideChange={(side) => setWorkspaceSides((current) => ({ ...current, [tool]: side }))}
             onPinChange={setWorkspacePinned}
           />
         ))}

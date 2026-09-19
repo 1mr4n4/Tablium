@@ -2,7 +2,7 @@
   "runOnStart": true,
   "logging": true,
   "silent": true,
-  "updateInterval": 240,
+  "updateInterval": 300,
   "commitMessage": "{ts.locale.date} {ts.locale.time}",
   "locale": "en-US",
   "timeZone": "Europe/Berlin"

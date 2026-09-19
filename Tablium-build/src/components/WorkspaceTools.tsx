@@ -225,8 +225,7 @@ export default function WorkspaceTools({ tool, stackIndex = 0, side, pinned, onC
     >
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/[0.08] px-4 py-3 dark:border-white/[0.08]">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand dark:text-live">{t.workspace}</p>
-          <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">{t.workspaceDescription}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand dark:text-live">{toolLabels[activeTool]}</p>
         </div>
         <div className="flex items-center gap-1">
           <button onClick={() => onSideChange('left')} aria-label={t.openWorkspaceLeft} title={t.openWorkspaceLeft} className={`focus-ring rounded-lg p-2 ${side === 'left' ? 'bg-brand text-white dark:bg-live dark:text-ink-800' : 'text-ink-500'}`}><PanelLeftOpen size={15} /></button>
