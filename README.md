@@ -1,3 +1,6 @@
+# !! THIS PROJECT IS STILL IN ITS EARLY VERSIONS, PLEASE REPORT ANY BUGS/INSTABILITIES. !!
+
+
 # Tablium
 
 Tablium is a responsive timetable workspace for students and teams. Build a schedule from scratch, adjust every period and break, move sessions visually, and keep related tools close without cluttering the calendar.
