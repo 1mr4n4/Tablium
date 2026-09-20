@@ -35,7 +35,36 @@
   * {
     scrollbar-width: thin;
     scrollbar-color: rgba(120, 120, 120, 0.35) transparent;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
+
+  button, input, select, textarea, [role='button'], [type='button'], [type='submit'] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  input, select, textarea {
+    min-height: 2.75rem;
+  }
+
+  button {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+
+  @media (pointer: coarse) {
+    button, input, select, textarea, [role='button'] {
+      min-height: 2.9rem;
+      min-width: 2.9rem;
+    }
+
+    .workspace-window {
+      max-height: 58vh !important;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;

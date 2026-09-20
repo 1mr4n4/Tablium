@@ -158,6 +158,7 @@ export default function WorkspaceTools({ tool, stackIndex = 0, showSwitch = fals
     context.strokeStyle = color;
     context.lineWidth = 5;
     context.lineCap = 'round';
+    context.lineJoin = 'round';
   }
 
   function draw(event: React.PointerEvent<HTMLCanvasElement>) {
