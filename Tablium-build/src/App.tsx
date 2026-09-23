@@ -132,7 +132,7 @@ function Dashboard() {
       <header className="sticky top-0 z-30 border-b border-ink/[0.08] bg-paper/85 backdrop-blur-md dark:border-white/[0.08] dark:bg-ink/85">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
           <div className="flex items-center gap-2">
-            <h1 className="font-display text-xl italic text-ink-800 dark:text-paper">Tablium</h1>
+            <h1 className="logo-animated font-display text-xl italic text-ink-800 dark:text-paper">Tablium</h1>
             <WorkspaceLauncher onOpen={(tool) => { playUiSound('pop', soundEnabled); setWorkspaceTools((current) => current.includes(tool) ? current : [...current, tool]); }} />
           </div>
 
