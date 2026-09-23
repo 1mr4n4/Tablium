@@ -247,8 +247,8 @@ export default function WorkspaceTools({ tool, stackIndex = 0, showSwitch = fals
         if (info.offset.x < -90) onSideChange('left');
       }}
       data-workspace-window
-      style={{ top: `calc(5rem + ${stackIndex} * 44vh)` }}
-      className={`workspace-window safe-top fixed top-20 z-40 flex max-h-[42vh] w-[min(320px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl glass-solid shadow-2xl ${side === 'left' ? 'left-3' : 'right-3'}`}
+      style={{ top: `calc(4.5rem + ${stackIndex} * 32px)` }}
+      className={`workspace-window safe-top fixed top-20 z-40 flex max-h-[min(78vh,600px)] w-[min(320px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-2xl glass-solid shadow-2xl ${side === 'left' ? 'left-3' : 'right-3'}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/[0.08] px-4 py-3 dark:border-white/[0.08]">
         <div>
@@ -265,20 +265,20 @@ export default function WorkspaceTools({ tool, stackIndex = 0, showSwitch = fals
       <motion.div key={activeTool} initial={{ opacity: 0, y: 8, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="safe-bottom min-h-0 overflow-y-auto p-3">
         {activeTool === 'calculator' && (
           <div className="mx-auto max-w-sm">
-            <div className="rounded-xl bg-ink-800 p-3 text-right text-paper">
-              <div className="min-h-5 text-xs text-paper/50">{expression || ' '}</div>
-              <div className="mt-1 truncate text-2xl font-semibold">{result}</div>
+            <div className="rounded-xl bg-ink-800 px-3 py-2 text-right text-paper">
+              <div className="min-h-4 truncate text-xs text-paper/50">{expression || ' '}</div>
+              <div className="mt-0.5 truncate text-xl font-semibold leading-tight">{result}</div>
             </div>
-            <div className="mt-2 flex items-center justify-between">
+            <div className="mt-1.5 flex items-center justify-between">
               <span className="text-[10px] font-semibold tracking-wider text-ink-500">SCIENTIFIC</span>
-              <button onClick={() => setAngleMode((mode) => mode === 'DEG' ? 'RAD' : 'DEG')} className="focus-ring rounded-md bg-brand px-2 py-1 text-[10px] font-semibold text-white dark:bg-live dark:text-ink-800">{angleMode}</button>
+              <button onClick={() => setAngleMode((mode) => mode === 'DEG' ? 'RAD' : 'DEG')} className="focus-ring rounded-md bg-brand px-2 py-0.5 text-[10px] font-semibold text-white dark:bg-live dark:text-ink-800">{angleMode}</button>
             </div>
-            <div className="mt-2 grid grid-cols-5 gap-1.5">
+            <div className="mt-1.5 grid grid-cols-5 gap-1">
               {['sin(', 'cos(', 'tan(', 'log(', 'ln(', '√(', '^', 'π', 'e', '!', '7', '8', '9', '/', '(', '4', '5', '6', '*', ')', '1', '2', '3', '-', '%', '0', '.', ',', '+', '⌫'].map((key) => (
-                <button key={key} onClick={() => key === '⌫' ? setExpression((current) => current.slice(0, -1)) : appendExpression(key)} className="focus-ring rounded-lg glass px-2 py-1.5 text-xs font-medium hover:-translate-y-0.5">{key}</button>
+                <button key={key} onClick={() => key === '⌫' ? setExpression((current) => current.slice(0, -1)) : appendExpression(key)} className="focus-ring rounded-md glass px-1 py-1 text-[11px] font-medium hover:-translate-y-0.5">{key}</button>
               ))}
-              <button onClick={() => setExpression('')} className="focus-ring col-span-2 rounded-lg bg-session-examen/10 px-2 py-1.5 text-xs text-session-examen">AC</button>
-              <button onClick={calculate} className="focus-ring col-span-3 rounded-lg bg-brand px-2 py-1.5 text-sm font-semibold text-white dark:bg-live dark:text-ink-800">=</button>
+              <button onClick={() => setExpression('')} className="focus-ring col-span-2 rounded-md bg-session-examen/10 px-1 py-1 text-[11px] text-session-examen">AC</button>
+              <button onClick={calculate} className="focus-ring col-span-3 rounded-md bg-brand px-1 py-1 text-xs font-semibold text-white dark:bg-live dark:text-ink-800">=</button>
             </div>
           </div>
         )}
