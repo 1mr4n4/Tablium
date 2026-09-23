@@ -111,6 +111,29 @@
   }
 }
 
+@keyframes tablium-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(0.5deg); }
+  75% { transform: translateY(2px) rotate(-0.5deg); }
+}
+
+@keyframes tablium-glow {
+  0%, 100% { text-shadow: 0 0 8px rgba(242, 183, 5, 0.25), 0 0 20px rgba(30, 58, 95, 0.2); }
+  50% { text-shadow: 0 0 16px rgba(242, 183, 5, 0.5), 0 0 40px rgba(30, 58, 95, 0.35); }
+}
+
+.logo-animated {
+  animation: tablium-float 5s ease-in-out infinite, tablium-glow 3.5s ease-in-out infinite;
+  display: inline-block;
+  cursor: default;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.logo-animated:hover {
+  animation-play-state: paused;
+  transform: scale(1.08) rotate(-1.5deg);
+}
+
 @media (max-width: 767px) {
   .workspace-window {
     left: 0.75rem !important;
